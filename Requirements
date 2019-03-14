@@ -1,0 +1,140 @@
+System Requirements
+Decide whether to create a web, desktop or mobile application.
+
+
+Game Mechanics
+NOTE: Requirements will depend on the game mechanics chosen.
+Gameplay options as well as ‘winning scenarios’ include:
+Players select start points and each “live” cell colors in the GUI grid.  First player to completely color in their grid wins.
+Set a time limit to play the simulation, depending on the players start positions, at the end of the time limit whoever created more living cells wins.
+Set up system to determine a “turn” and used a turn based system to decide on the winner depending on:
+Greatest grid color filled
+Total number of living cells created throughout the game
+Which player killed the most cells
+Allow players to predict which cells will belong to their color after a set number of iterations pass
+If a player correctly predicts a cell, it is then locked to their color permanently
+The player who locks down the desired amount of territory wins. This could be 50% or some other amount determined to be sensible through play testing.
+Divide the game board up into sections. Allow the player(s) to pick a set number of sections. The player will receive points depending on the number of cells in their chosen section(s) after a certain number of iterations.
+The game board is evenly divided up into sections.
+Before the game starts, there are X number of cells placed randomly on the board.
+The player(s) will select X number of sections before the game runs.
+The game runs for X number of iterations and then stops.
+The player receives 1 point per cell that is in their chosen section.
+
+
+
+Create different controls
+NOTE: Controls for the game will also depend on the type of game pursued. Some of the standard controls we discussed are:
+Start
+Stop
+Pause
+Speed
+Choose icons for player representation
+Color
+Image
+Display statistics
+Live stats
+Stats between “turns”
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Stated below are a list of requirements that will most likely apply to the game (regardless of game type, winning conditions). 
+
+Case 1: Desktop Application
+CSCI External Interface Requirements
+No external interfaces in the case of the desktop application (unless we decide on online multiplayer instead of local multiplayer).
+CSCI Internal Interface Requirements
+Internal Interface requirements are ultimately subject to the final design of the application.
+The application shall have a main menu screen.
+The main menu screen shall have an “Exit Game” button.
+The “Exit Game” button shall allow the user to terminate the application when clicked.
+The main menu screen shall have a “Start Game” button.
+The “Start Game” button shall bring up a windows where the user may specify initial game options.
+Initial game options shall include the option to change player “cell” colors.
+Initial game option shall include the option to change player game image.
+Initial game options shall include the option to change the game board grid size ***
+The initial game options window shall have a button to allow the game to start.
+The application shall have a window that displays gameplay statistics.
+The gameplay statistics window shall be displayed after X number of iterations.
+The gameplay statistics window shall display the player name.
+The gameplay statistics window shall display <insert stat here>
+The gameplay statistics windows shall have a button that allows the player to continue the game.
+The gameplay statistics window shall have a button that allows the player to leave the game to return to the main menu screen.
+CSCI Internal Data Requirements
+The application shall store any user gameplay statistics locally on their system.
+Security and Privacy Requirements
+This will depend on whether sensitive user information (i.e. passwords) will be processed/stored by the application 
+The application shall store a hash of the user’s passwords (not plaintext).
+CSCI Environments Requirements
+The application shall operate on the Windows 10 operating system.
+Do we want this to be on Mac? NO
+Computer Resource Requirements
+The application shall utilize the system’s keyboard.
+The application shall utilize the system’s mouse or pointer device.
+Case 2: Web Application
+
+CSCI External Interface Requirements
+The player shall connect to the application (web server) via their web browser.***
+The web server shall verify user credentials before providing the game service.
+The web server shall provide a game server to allow online multiplayer of the game service.
+The web server shall allows X number of users to connect to a single game server.
+See Figure 1 for a possible diagram detailing the interaction of the interfaces.
+CSCI Internal Interface Requirements
+Internal Interface requirements are ultimately subject to the final design of the application.
+The application shall have a main menu screen.
+The main menu screen shall have an “Exit Game” button.
+The “Exit Game” button shall allow the user to terminate the application when clicked.
+The main menu screen shall have a “Start Game” button.
+The “Start Game” button shall bring up a windows where the user may specify initial game options.
+Initial game options shall include the option to change player “cell” colors.
+Initial game option shall include the option to change player game image.
+Initial game options shall include the option to change the game board grid size ***
+The initial game options window shall have a button to allow the game to start.
+The application shall have a window that displays gameplay statistics.
+The gameplay statistics window shall be displayed after X number of iterations.
+The gameplay statistics window shall display the player name.
+The gameplay statistics window shall display <insert stat here>
+The gameplay statistics windows shall have a button that allows the player to continue the game.
+The gameplay statistics window shall have a button that allows the player to leave the game to return to the main menu screen.
+CSCI Internal Data Requirements
+The application shall store any user gameplay statistics locally on their system. ***
+The application shall store any user gameplay statistics in a database on the web server. ***
+The user credentials shall be stored in a hash table in the web server.
+Security and Privacy Requirements
+This will depend on whether sensitive user information (i.e. passwords) will be processed/stored by the application
+The application shall salt the user passwords.
+The application shall store a hash of the user’s passwords (not plaintext).
+CSCI Environments Requirements
+The application shall operate on the Google Chrome browser. ***
+The application shall operate on the Firefox browser. ***
+The application shall operate on the Microsoft Edge browser. ***
+Computer Resource Requirements
+The application shall utilize the system’s keyboard.
+The application shall utilize the system’s mouse or pointer device.
+
+
+Figure 1.
+Details the interactions of the user(s) and the webs server.
