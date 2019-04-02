@@ -114,7 +114,7 @@ def main():
 	stop = tk.Button(root, text="Stop!", command = stop_game)
 	stop.pack(side = tk.TOP)
 	
-	frame = tk.Frame(root, side = tk.BOTTOM, width=720, height=720)
+	frame = tk.Frame(root, width=720, height=720)
 	frame.pack()
 	canvas = tk.Canvas(frame, width=720, height=720)
 	canvas.pack()
