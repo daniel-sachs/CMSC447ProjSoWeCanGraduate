@@ -1,4 +1,4 @@
-# from Tkinter import *
+from Tkinter import *
 from gol import *
 
 
@@ -10,10 +10,10 @@ def create_grid():
 	global rectangles # Variable to store rectangles
 	rectangles = []
 	grid = []
-	for i in range(70):
+	for i in range(53): #height
 		grid.append([])
 		rectangles.append([])
-		for j in range(70):
+		for j in range(37): #width
 			rect = canvas.create_rectangle(x, y, x+10, y+10, fill="white")
 			rectangles[i].append(rect)
 			grid[i].append(Cell(x, y, i, j))
@@ -107,20 +107,78 @@ def main():
 	root = tk.Tk()
 	game_menu = Menubar(root)
 	root.title("Conway's Game of Life")
-	
-	# Adding elements to the screen	
-	start = tk.Button(root, text="Start!", command=begin_game)
-	start.pack(side = tk.TOP)
-	stop = tk.Button(root, text="Stop!", command = stop_game)
-	stop.pack(side = tk.TOP)
-	
-	frame = tk.Frame(root, width=720, height=720)
-	frame.pack()
-	canvas = tk.Canvas(frame, width=720, height=720)
+
+	# makes the game full screen
+	root.overrideredirect(True)
+	root.geometry("%dx%d+0+0" % (root.winfo_screenwidth(), root.winfo_screenheight() - 25))
+	root.focus_set()
+
+
+
+	# Adding elements to the screen starting with the above scoreboard and buttons
+	#start = tk.Button(root, text="Start!", command=begin_game, width=5).grid(row=4, column=4, sticky=W)
+	#stop = tk.Button(root, text="Stop!", command=stop_game).grid(row=4, column=4, sticky=E)
+	#setTurn = tk.Button(root, text="Set Turns").grid(row=4, column=5, sticky=W)
+
+	frame_timer = tk.Frame(root, width=300, height=200, highlightthickness=3, highlightbackground="black")
+	frame_timer.pack()
+	frame_timer.place(x=(root.winfo_screenwidth()/2)-140, y=0)
+	turnLabel = tk.Label(frame_timer, text="Turns Left", bg="IndianRed3", fg="snow", height=4, width=13, font="Times 40", anchor="n").pack()
+	frame_counter = tk.Label(root, width=300, height=200, highlightthickness=3, highlightbackground="black")
+	frame_counter.pack()
+	frame_counter.place(x=(root.winfo_screenwidth()/2)-80, y=65)
+	turnCounter = tk.Label(frame_counter, text="00", bg="gray79", fg="black", font="Times 45", height=2, width=6).pack()
+	frame_Banner = tk.Label(root, width=300, height=200)
+	frame_Banner.pack()
+	frame_Banner.place(x=(root.winfo_screenwidth()/2)-407, y=198)
+	player1Title = tk.Label(frame_Banner, text="Player 1", bg="gray25", fg="snow", font="Times 20", width=40, relief="solid").pack(side="left")
+	player2Title = tk.Label(frame_Banner, text="Player 2", bg="gray25", fg="snow", font="Times 20", width=41, relief="solid").pack(side="right")
+	frame_board = tk.Frame(root, width=300, height=200)
+	frame_board.pack()
+	frame_board.place(x=(root.winfo_screenwidth()/2)-407, y=229)
+	bordBackground = tk.Label(frame_board, bg="gray50", borderwidth=2, relief="solid", width=91, height=35).pack()
+
+	#Player 1 side
+	frame_player1 = tk.Frame(root, width=300, height=200, highlightthickness=2, highlightbackground="black")
+	frame_player1.pack()
+	frame_player1.place(x=100, y=200)
+	stats = Label(frame_player1, text="Player 1 Stats", bg="gray25", fg="snow", font="Times 30").pack(fill="both")
+	cellToChange = Label(frame_player1, text="Cells to Change:  10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="s").pack()
+	deletion = Label(frame_player1, text="Deletions done:  10", bg="gray50", fg="black", font="Times 20", width=20, height=3).pack()
+	addition = Label(frame_player1, text="Additions done:  10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="n").pack()
+	remining = Label(frame_player1, text="Remaining: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="s").pack()
+	alive = Label(frame_player1, text="Total Alive: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3).pack()
+	dead = Label(frame_player1, text="Total Dead: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="n").pack()
+
+	#Player 2 side
+	frame_player2 = tk.Frame(root, width=300, height=200, highlightthickness=2, highlightbackground="black")
+	frame_player2.pack()
+	frame_player2.place(x=root.winfo_screenwidth()-299, y=200)
+	stats2 = Label(frame_player2, text="Player 2 Stats", bg="gray25", fg="snow", font="Times 30").pack(fill="both")
+	cellToChange2 = Label(frame_player2, text="Cells to Change:  10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="s").pack()
+	deletion2 = Label(frame_player2, text="Deletions done:  10", bg="gray50", fg="black", font="Times 20", width=20, height=3).pack()
+	addition2 = Label(frame_player2, text="Additions done:  10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="n").pack()
+	remining2 = Label(frame_player2, text="Remaining: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="s").pack()
+	alive2 = Label(frame_player2, text="Total Alive: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3).pack()
+	dead2 = Label(frame_player2, text="Total Dead: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="n").pack()
+
+	#adding the boards to the GUI
+	frame_grid = tk.Frame(root, width=390, height=554, highlightthickness=2, highlightbackground="black")
+	frame_grid.pack()
+	frame_grid.place(x=(root.winfo_screenwidth()/2)-400, y=235)
+	canvas = tk.Canvas(frame_grid, width=384, height=544)
 	canvas.pack()
 	create_grid()
-	
 	canvas.bind("<Button-1>", change_colour_on_click)
+
+	frame_grid2 = tk.Frame(root, width=400, height=554, highlightthickness=2, highlightbackground="black")
+	frame_grid2.pack()
+	frame_grid2.place(x=(root.winfo_screenwidth() / 2)+10, y=235)
+	canvas = tk.Canvas(frame_grid2, width=384, height=544)
+	canvas.pack()
+###insert player 2 grid here
+###insert player 2 grid button listener here
 	root.mainloop()
 	
 main()
+
