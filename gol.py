@@ -25,7 +25,8 @@ class Cell:
 class Menubar(tk.Frame):
 	def __init__(self, parent):
 		tk.Frame.__init__(self, parent)   
-		self.parent = parent        
+		self.parent = parent
+		self.root = parent
 		self.initUI()
         
 	def initUI(self):
@@ -58,21 +59,13 @@ class Menubar(tk.Frame):
 		menubar.add_cascade(label="Help", menu=helpMenu)
 
 	def onNew(self):
-		global okToPressReturn
-		global hunger
-		global happiness
-		global day
-		okToPressReturn = True
-		hunger = 100
-		happiness = 100
-		day = 0
-		startGame(0)
+		print()
 
 	def onView(self):
 		score_file = open("Game_Record.txt",  'r+')
 		score_data = "Previous Scores: \n" + "----------------\n" + score_file.read()
-		S = tk.Scrollbar(root)
-		T = tk.Text(root, height = 10, width = 20)
+		S = tk.Scrollbar(self.root)
+		T = tk.Text(self.root, height = 10, width = 20)
 		S.pack(side = tk.RIGHT, fill = tk.Y)
 		T.pack(side = tk.LEFT, fill = tk.Y)
 		S.config(command=T.yview)
@@ -86,14 +79,10 @@ class Menubar(tk.Frame):
 		self.quit()
 
 	def onEasy(self):
-		global happiness_step
-		happiness_step /= 2
+		print()
 
 	def onHard(self):
-		global happiness_step
-		global hunger_step
-		hunger_step *= 2
-		happiness_step *= 2
+		print()
 		
 	def onDefault(self):
 		global happiness_step
@@ -144,3 +133,108 @@ There are also instructions for how to play the various mini-games as well as th
 		exitButton.pack(side = tk.LEFT, fill = tk.Y)
 		
 #---------------------------------------------------------------------  
+
+class Game:
+
+	def __init__(self, canvas, root):
+		self.canvas = canvas  
+		self.root = root
+		self.grid = [] # Variable to store the Cell objects
+		self.rectangles = [] # Variable to store self.rectangles
+		self.begin_id
+		self.create_grid()
+		self.canvas.bind("<Button-1>", self.change_colour_on_click)
+
+	# This function creates the board on which the game will take place
+	def create_grid(self):
+		x = 10
+		y = 10
+		for i in range(35): #height
+			self.grid.append([])
+			self.rectangles.append([])
+			for j in range(35): #width
+				rect = self.canvas.create_rectangle(x, y, x+10, y+10, fill="white")
+				self.rectangles[i].append(rect)
+				self.grid[i].append(Cell(x, y, i, j))
+				x += 10
+			x = 10
+			y += 10
+
+
+	# Find the co-ordinates of the rectangle which has been clicked
+	def find_rect_coordinates(self, x, y):
+		return (x- x%10, y - y%10)
+
+
+	# Change the colour of the clicked self.grid and change the status of cell in the self.grid
+	def change_colour_on_click(self, event):
+		print(event.x, event.y)
+		x, y = self.find_rect_coordinates(event.x, event.y)
+		try:
+			iy = x / 10 - 1
+			ix = y / 10 - 1
+			if ix == -1 or iy == -1:
+				raise IndexError
+			if self.grid[ix][iy].isAlive:
+				self.canvas.itemconfig(self.rectangles[ix][iy], fill="white")
+			else:
+				self.canvas.itemconfig(self.rectangles[ix][iy], fill="green")
+			self.grid[ix][iy].switchStatus()
+			print(self.grid[ix][iy].pos_matrix, self.grid[ix][iy].pos_screen)
+		except IndexError:
+			return
+
+
+	def paint_grid(self):
+		for i in self.grid:
+			for j in i:
+				if j.nextStatus != j.isAlive:
+					x, y = j.pos_matrix
+					print(x, y)
+					if j.nextStatus:
+						self.canvas.itemconfig(self.rectangles[x][y], fill="green")
+						print("changed", j.pos_matrix, "from dead to alive")
+					else:
+						self.canvas.itemconfig(self.rectangles[x][y], fill="white")
+						print("changed", j.pos_matrix, "from alive to dead")
+						j.switchStatus()
+						print("Current status of", j.pos_matrix, j.isAlive)
+
+
+	def changeInStatus(self, cell):
+		''' If the cell's status changes in the next gen, return True else False '''
+		num_alive = 0
+		x, y = cell.pos_matrix
+		for i in (x-1, x, x+1):
+			for j in (y-1, y, y+1):
+				if i == x and j == y:
+					continue
+				if i == -1 or j == -1:
+					continue
+				try:
+					if self.grid[i][j].isAlive:
+						num_alive += 1
+				except IndexError:
+					pass
+		if cell.isAlive:
+			return not( num_alive == 2 or num_alive == 3 )
+		else:
+			return num_alive == 3
+
+
+	def begin(self):
+		for i in self.grid:
+			for j in i:
+				if self.changeInStatus(j):
+					j.nextStatus = not j.isAlive
+					print("change in", j.pos_matrix, "from", j.isAlive, "to", j.nextStatus)
+				else:
+					j.nextStatus = j.isAlive
+		self.paint_grid()
+		self.begin_id = self.root.after(200, self.begin) # Can be used to change speed
+
+
+	def stop(self):
+		self.root.after_cancel(self.begin_id)
+
+#-------------------------------------------------------------------
