@@ -141,7 +141,7 @@ class Game:
 		self.root = root
 		self.grid = [] # Variable to store the Cell objects
 		self.rectangles = [] # Variable to store self.rectangles
-		self.begin_id
+		self.begin_id = None
 		self.create_grid()
 		self.canvas.bind("<Button-1>", self.change_colour_on_click)
 
