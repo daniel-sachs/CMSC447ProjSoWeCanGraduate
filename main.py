@@ -126,7 +126,10 @@ def main():
 ###insert player 2 grid here
 	p2Game = Game(canvas2, root)
 ###insert player 2 grid button listener here
+
 	root.mainloop()
+
+	print("stiff")
 	
 main()
 

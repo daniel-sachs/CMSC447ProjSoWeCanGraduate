@@ -142,6 +142,7 @@ class Game:
 		self.grid = [] # Variable to store the Cell objects
 		self.rectangles = [] # Variable to store self.rectangles
 		self.begin_id = None
+		self.game_speed = 200
 		self.create_grid()
 		self.canvas.bind("<Button-1>", self.change_colour_on_click)
 
@@ -231,7 +232,7 @@ class Game:
 				else:
 					j.nextStatus = j.isAlive
 		self.paint_grid()
-		self.begin_id = self.root.after(200, self.begin) # Can be used to change speed
+		self.begin_id = self.root.after(self.game_speed, self.begin) # Can be used to change speed
 
 
 	def stop(self):
