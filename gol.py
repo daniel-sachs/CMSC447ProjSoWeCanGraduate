@@ -149,14 +149,18 @@ There are also instructions for how to play the various mini-games as well as th
 
 class Game:
 
-	def __init__(self, canvas, root):
+	def __init__(self, canvas, root, color = 'forest green', dead_color = 'green2'):
 		self.canvas = canvas
 		self.root = root
 		self.grid = [] # Variable to store the Cell objects
 		self.rectangles = [] # Variable to store self.rectangles
 		self.begin_id = None
 		self.game_speed = 200
+		self.color = color
+		self.dead_color = dead_color
 		self.create_grid()
+		self.num_alive = 0
+		self.total_painted = 0
 		self.canvas.bind("<Button-1>", self.change_colour_on_click)
 
 	# This function creates the board on which the game will take place
@@ -185,14 +189,18 @@ class Game:
 		print(event.x, event.y)
 		x, y = self.find_rect_coordinates(event.x, event.y)
 		try:
-			iy = x / 10 - 1
-			ix = y / 10 - 1
+			iy = int(x / 10 - 1)
+			ix = int(y / 10 - 1)
 			if ix == -1 or iy == -1:
 				raise IndexError
 			if self.grid[ix][iy].isAlive:
-				self.canvas.itemconfig(self.rectangles[ix][iy], fill="white")
+				self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
+				if self.num_alive > 0:
+					self.num_alive -= 1
 			else:
-				self.canvas.itemconfig(self.rectangles[ix][iy], fill="green")
+				self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.color)
+				self.num_alive += 1
+				self.total_painted += 1
 			self.grid[ix][iy].switchStatus()
 			print(self.grid[ix][iy].pos_matrix, self.grid[ix][iy].pos_screen)
 		except IndexError:
@@ -206,10 +214,14 @@ class Game:
 					x, y = j.pos_matrix
 					print(x, y)
 					if j.nextStatus:
-						self.canvas.itemconfig(self.rectangles[x][y], fill="green")
+						self.canvas.itemconfig(self.rectangles[x][y], fill=self.color)
 						print("changed", j.pos_matrix, "from dead to alive")
+						self.num_alive += 1
+						self.total_painted += 1
 					else:
-						self.canvas.itemconfig(self.rectangles[x][y], fill="white")
+						self.canvas.itemconfig(self.rectangles[x][y], fill=self.dead_color)
+						if self.num_alive > 0:
+							self.num_alive -= 1
 						print("changed", j.pos_matrix, "from alive to dead")
 						j.switchStatus()
 						print("Current status of", j.pos_matrix, j.isAlive)
@@ -250,33 +262,5 @@ class Game:
 
 	def stop(self):
 		self.root.after_cancel(self.begin_id)
-
-#-------------------------------------------------------------------
-
-# https://stackoverflow.com/questions/3393612/run-certain-code-every-n-seconds
-class RepeatedTimer(object):
-    def __init__(self, interval, function, *args, **kwargs):
-        self._timer     = None
-        self.interval   = interval
-        self.function   = function
-        self.args       = args
-        self.kwargs     = kwargs
-        self.is_running = False
-        self.start()
-
-    def _run(self):
-        self.is_running = False
-        self.start()
-        self.function(*self.args, **self.kwargs)
-
-    def start(self):
-        if not self.is_running:
-            self._timer = Timer(self.interval, self._run)
-            self._timer.start()
-            self.is_running = True
-
-    def stop(self):
-        self._timer.cancel()
-        self.is_running = False
 
 #-------------------------------------------------------------------
