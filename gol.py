@@ -1,5 +1,18 @@
 import Tkinter as tk
+from threading import Timer
 
+#-------------------------------------------------------------------
+# Helper Functions
+#-------------------------------------------------------------------
+
+def SpeedUp(p1, p2):
+	p1.game_speed *= 2
+	p2.game_speed *= 2
+#-------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------
+# Various Classes
 #-------------------------------------------------------------------
 
 # Creates a cell on the board
@@ -9,31 +22,31 @@ class Cell:
 		self.nextStatus = None
 		self.pos_screen = (x, y)
 		self.pos_matrix = (i, j)
-		
+
 	def __str__(self):
 		return str(self.isAlive)
-		
+
 	def __repr__(self):
 		return str(self.isAlive)
-		
+
 	def switchStatus(self):
-		self.isAlive = not self.isAlive	
+		self.isAlive = not self.isAlive
 
 #-------------------------------------------------------------------
 
-# Creates a menubar for the main display	  
+# Creates a menubar for the main display
 class Menubar(tk.Frame):
 	def __init__(self, parent):
-		tk.Frame.__init__(self, parent)   
+		tk.Frame.__init__(self, parent)
 		self.parent = parent
 		self.root = parent
 		self.initUI()
-        
+
 	def initUI(self):
 		self.parent.title("Simple menu")
 		menubar = tk.Menu(self.parent)
 		self.parent.config(menu=menubar)
-        
+
 		fileMenu = tk.Menu(menubar)
 		fileMenu.add_command(label="New", command=self.onNew)
 		fileMenu.add_command(label="View Scores", command=self.onView)
@@ -46,13 +59,13 @@ class Menubar(tk.Frame):
 		generalMenu.add_command(label="Set Turns", command=self.onDefault)
 		generalMenu.add_command(label="Reset", command=self.onDefault)
 		menubar.add_cascade(label="Game", menu=generalMenu)
-		
+
 		controlMenu = tk.Menu(menubar)
-		controlMenu.add_command(label="Game Speed", command=self.onEasy)
+		controlMenu.add_command(label="Speed Up", command=SpeedUp)
 		controlMenu.add_command(label="Edit Color", command=self.onHard)
 		controlMenu.add_command(label="Edit Tiles", command=self.onDefault)
 		menubar.add_cascade(label="Controls", menu=controlMenu)
-		
+
 		helpMenu = tk.Menu(menubar)
 		helpMenu.add_command(label="General", command=self.onGeneral)
 		helpMenu.add_command(label="Menubar", command=self.onMenu)
@@ -74,7 +87,7 @@ class Menubar(tk.Frame):
 		score_file.close()
 		T.after(15000, T.destroy)
 		S.after(15000, S.destroy)
-		
+
 	def onExit(self):
 		self.quit()
 
@@ -83,7 +96,7 @@ class Menubar(tk.Frame):
 
 	def onHard(self):
 		print()
-		
+
 	def onDefault(self):
 		global happiness_step
 		global hunger_step
@@ -103,7 +116,7 @@ class Menubar(tk.Frame):
 		T.insert(tk.END, info)
 		exitButton = tk.Button(master, text = "Quit", command = master.destroy)
 		exitButton.pack(side = tk.LEFT, fill = tk.Y)
-		
+
 	def onMenu(self):
 		master = tk.Tk()
 		master.title("Menubar Help")
@@ -131,17 +144,18 @@ There are also instructions for how to play the various mini-games as well as th
 		T.insert(tk.END, info)
 		exitButton = tk.Button(master, text = "Quit", command = master.destroy)
 		exitButton.pack(side = tk.LEFT, fill = tk.Y)
-		
-#---------------------------------------------------------------------  
+
+#---------------------------------------------------------------------
 
 class Game:
 
 	def __init__(self, canvas, root):
-		self.canvas = canvas  
+		self.canvas = canvas
 		self.root = root
 		self.grid = [] # Variable to store the Cell objects
 		self.rectangles = [] # Variable to store self.rectangles
 		self.begin_id = None
+		self.game_speed = 200
 		self.create_grid()
 		self.canvas.bind("<Button-1>", self.change_colour_on_click)
 
@@ -231,10 +245,38 @@ class Game:
 				else:
 					j.nextStatus = j.isAlive
 		self.paint_grid()
-		self.begin_id = self.root.after(200, self.begin) # Can be used to change speed
+		self.begin_id = self.root.after(self.game_speed, self.begin) # Can be used to change speed
 
 
 	def stop(self):
 		self.root.after_cancel(self.begin_id)
+
+#-------------------------------------------------------------------
+
+# https://stackoverflow.com/questions/3393612/run-certain-code-every-n-seconds
+class RepeatedTimer(object):
+    def __init__(self, interval, function, *args, **kwargs):
+        self._timer     = None
+        self.interval   = interval
+        self.function   = function
+        self.args       = args
+        self.kwargs     = kwargs
+        self.is_running = False
+        self.start()
+
+    def _run(self):
+        self.is_running = False
+        self.start()
+        self.function(*self.args, **self.kwargs)
+
+    def start(self):
+        if not self.is_running:
+            self._timer = Timer(self.interval, self._run)
+            self._timer.start()
+            self.is_running = True
+
+    def stop(self):
+        self._timer.cancel()
+        self.is_running = False
 
 #-------------------------------------------------------------------

@@ -1,6 +1,7 @@
 #from Tkinter import *
 import Tkinter as tk
-from gol import Cell, Menubar, Game
+from time import sleep
+from gol import Menubar, Game, SpeedUp, RepeatedTimer
 
 
 def begin_game():
@@ -12,11 +13,21 @@ def stop_game():
 	p1Game.stop()
 	p2Game.stop()
 
+
+def speed_up():
+	SpeedUp(p1Game,p2Game)
+
+
+def hello(name):
+	print "Hello %s!" % name
+
+
 def main():
 
 	global p1Game
 	global p2Game
-	
+	turn = 15
+
 	# Building the screen
 	root = tk.Tk()
 	game_menu = Menubar(root)
@@ -26,7 +37,7 @@ def main():
 	root.overrideredirect(True)
 	root.geometry("1400x700+25+0")
 	root.focus_set()
-	
+
 	#Adding elements to the screen starting with the above scoreboard and buttons
 	frame_buttons = tk.Frame(root, width=200, height=300, highlightthickness=2, highlightbackground="black")
 	frame_buttons.pack()
@@ -41,71 +52,71 @@ def main():
 	frame_slider = tk.Frame(root, width=200, height=80, highlightthickness=2, highlightbackground="black")
 	frame_slider.pack()
 	frame_slider.place(x=850, y=125)
-	#speed_slider = 
+	#speed_slider =
 	tk.Scale(frame_slider, from_=0, to=200, orient="horizontal", length=200).pack()
 
 	frame_timer = tk.Frame(root, width=300, height=200, highlightthickness=3, highlightbackground="black")
 	frame_timer.pack()
 	frame_timer.place(x=590, y=30)
-	#turnLabel = 
+	#turnLabel =
 	tk.Label(frame_timer, text="Turns Left", bg="IndianRed3", fg="snow", height=4, width=13, font="Times 30", anchor="n").pack()
 
 	frame_counter = tk.Frame(root, width=300, height=200, highlightthickness=3, highlightbackground="black")
 	frame_counter.pack()
 	frame_counter.place(x=618, y=86)
-	#turnCounter = 
-	tk.Label(frame_counter, text="00", bg="gray79", fg="black", font="Times 45", height=1, width=6).pack()
+	#turnCounter =
+	tk.Label(frame_counter, text=str(turn), bg="gray79", fg="black", font="Times 45", height=1, width=6).pack()
 
 	frame_Banner = tk.Frame(root, width=300, height=200, highlightthickness=2, highlightbackground="black")
 	frame_Banner.pack()
 	frame_Banner.place(x=288, y=198)
-	#player1Title = 
+	#player1Title =
 	tk.Label(frame_Banner, text="Player 1", bg="gray25", fg="snow", font="Times 20", width=40).pack(side="left")
-	#player2Title = 
+	#player2Title =
 	tk.Label(frame_Banner, text="Player 2", bg="gray25", fg="snow", font="Times 20", width=41).pack(side="right")
 
 	frame_board = tk.Frame(root, width=300, height=200)
 	frame_board.pack()
 	frame_board.place(x=288, y=229)
-	#bordBackground = 
+	#bordBackground =
 	tk.Label(frame_board, bg="gray50", borderwidth=2, relief="solid", width=91, height=29).pack()
 
 	#Player 1 side
 	frame_player1 = tk.Frame(root, width=300, height=200, highlightthickness=2, highlightbackground="black")
 	frame_player1.pack()
 	frame_player1.place(x=50, y=200)
-	#stats = 
+	#stats =
 	tk.Label(frame_player1, text="Player 1 Stats", bg="gray25", fg="snow", font="Times 30").pack(fill="both")
-	#cellToChange = 
+	#cellToChange =
 	tk.Label(frame_player1, text="Cells to Change:  10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="s").pack()
-	#deletion = 
+	#deletion =
 	tk.Label(frame_player1, text="Deletions done:  10", bg="gray50", fg="black", font="Times 20", width=20, height=3).pack()
-	#addition = 
+	#addition =
 	tk.Label(frame_player1, text="Additions done:  10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="n").pack()
-	#remining = 
+	#remining =
 	tk.Label(frame_player1, text="Remaining: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="s").pack()
-	#alive = 
+	#alive =
 	tk.Label(frame_player1, text="Total Alive: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3).pack()
-	#dead = 
+	#dead =
 	tk.Label(frame_player1, text="Total Dead: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="n").pack()
 
 	#Player 2 side
 	frame_player2 = tk.Frame(root, width=300, height=200, highlightthickness=2, highlightbackground="black")
 	frame_player2.pack()
 	frame_player2.place(x=root.winfo_screenwidth()-299, y=200)
-	#stats2 = 
+	#stats2 =
 	tk.Label(frame_player2, text="Player 2 Stats", bg="gray25", fg="snow", font="Times 30").pack(fill="both")
-	#cellToChange2 = 
+	#cellToChange2 =
 	tk.Label(frame_player2, text="Cells to Change:  10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="s").pack()
-	#deletion2 = 
+	#deletion2 =
 	tk.Label(frame_player2, text="Deletions done:  10", bg="gray50", fg="black", font="Times 20", width=20, height=3).pack()
-	#addition2 = 
+	#addition2 =
 	tk.Label(frame_player2, text="Additions done:  10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="n").pack()
-	#remining2 = 
+	#remining2 =
 	tk.Label(frame_player2, text="Remaining: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="s").pack()
-	#alive2 = 
+	#alive2 =
 	tk.Label(frame_player2, text="Total Alive: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3).pack()
-	#dead2 = 
+	#dead2 =
 	tk.Label(frame_player2, text="Total Dead: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="n").pack()
 
 	#adding the boards to the GUI
@@ -126,7 +137,16 @@ def main():
 ###insert player 2 grid here
 	p2Game = Game(canvas2, root)
 ###insert player 2 grid button listener here
-	root.mainloop()
-	
-main()
 
+	rt = RepeatedTimer(2, hello, "World")
+	try:
+		root.mainloop()
+		turn -= 1
+		sleep(15) # your long-running job goes here...
+		tk.Label(frame_counter, text=str(turn), bg="gray79", fg="black", font="Times 45", height=1, width=6).pack()
+
+	finally:
+		rt.stop() # better in a try/finally block to make sure the program ends!
+
+	root.mainloop()
+main()
