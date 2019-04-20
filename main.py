@@ -1,5 +1,5 @@
 #from Tkinter import *
-import Tkinter as tk
+import tkinter as tk
 from time import sleep
 from gol import Menubar, Game, SpeedUp, RepeatedTimer
 
