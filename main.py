@@ -18,8 +18,14 @@ def speed_up():
 	SpeedUp(p1Game,p2Game)
 
 
-def hello(name):
-	print "Hello %s!" % name
+ # Manages the changes made to the game's main display
+def updateDisplay(turnLabel, turn):
+
+    #update the day' label.
+	turnLabel.config(text = str(turn))   
+
+    #run the function again after 100ms.       
+	turnLabel.after(1000, updateDisplay, turnLabel, turn - 1)
 
 
 def main():
@@ -58,14 +64,14 @@ def main():
 	frame_timer = tk.Frame(root, width=300, height=200, highlightthickness=3, highlightbackground="black")
 	frame_timer.pack()
 	frame_timer.place(x=590, y=30)
-	#turnLabel =
+	# turnLabel = 
 	tk.Label(frame_timer, text="Turns Left", bg="IndianRed3", fg="snow", height=4, width=13, font="Times 30", anchor="n").pack()
 
 	frame_counter = tk.Frame(root, width=300, height=200, highlightthickness=3, highlightbackground="black")
 	frame_counter.pack()
 	frame_counter.place(x=618, y=86)
-	#turnCounter =
-	tk.Label(frame_counter, text=str(turn), bg="gray79", fg="black", font="Times 45", height=1, width=6).pack()
+	turnCounter = tk.Label(frame_counter, text=str(turn), bg="gray79", fg="black", font="Times 45", height=1, width=6)
+	turnCounter.pack()
 
 	frame_Banner = tk.Frame(root, width=300, height=200, highlightthickness=2, highlightbackground="black")
 	frame_Banner.pack()
@@ -138,15 +144,6 @@ def main():
 	p2Game = Game(canvas2, root)
 ###insert player 2 grid button listener here
 
-	rt = RepeatedTimer(2, hello, "World")
-	try:
-		root.mainloop()
-		turn -= 1
-		sleep(15) # your long-running job goes here...
-		tk.Label(frame_counter, text=str(turn), bg="gray79", fg="black", font="Times 45", height=1, width=6).pack()
-
-	finally:
-		rt.stop() # better in a try/finally block to make sure the program ends!
-
+	updateDisplay(turnCounter, turn)
 	root.mainloop()
 main()
