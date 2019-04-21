@@ -5,9 +5,10 @@ from threading import Timer
 # Helper Functions
 #-------------------------------------------------------------------
 
-def SpeedUp(p1, p2):
-	p1.game_speed *= 2
-	p2.game_speed *= 2
+# Speeds up the game_speed based on the value found at the slider
+def SpeedUp(p1, p2, speed = 2):
+	p1.game_speed *= speed
+	p2.game_speed *= speed
 #-------------------------------------------------------------------
 
 
