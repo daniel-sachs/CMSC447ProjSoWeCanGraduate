@@ -1,7 +1,7 @@
 #from Tkinter import *
 import tkinter as tk
 from time import sleep
-from gol import Menubar, Game, SpeedUp, RepeatedTimer
+from gol import Menubar, Game, SpeedUp
 
 
 def begin_game():
@@ -34,6 +34,13 @@ def main():
 	global p2Game
 	turn = 15
 
+	# Player colors, list[0] = alive color, list[1] = dead color
+	green = ['forest green','green2']
+	blue = ['blue2', 'cyan2']
+	red = ['red', 'salmon']
+	purple = ['purple1', 'MediumPurple1']
+	colors = [green, blue, red]
+
 	# Building the screen
 	root = tk.Tk()
 	game_menu = Menubar(root)
@@ -58,8 +65,8 @@ def main():
 	frame_slider = tk.Frame(root, width=200, height=80, highlightthickness=2, highlightbackground="black")
 	frame_slider.pack()
 	frame_slider.place(x=850, y=125)
-	#speed_slider =
-	tk.Scale(frame_slider, from_=0, to=200, orient="horizontal", length=200).pack()
+	speed_slider = tk.Scale(frame_slider, from_=0, to=200, orient="horizontal", length=200)
+	speed_slider.pack()
 
 	frame_timer = tk.Frame(root, width=300, height=200, highlightthickness=3, highlightbackground="black")
 	frame_timer.pack()
@@ -101,10 +108,11 @@ def main():
 	tk.Label(frame_player1, text="Additions done:  10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="n").pack()
 	#remining =
 	tk.Label(frame_player1, text="Remaining: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="s").pack()
-	#alive =
-	tk.Label(frame_player1, text="Total Alive: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3).pack()
-	#dead =
-	tk.Label(frame_player1, text="Total Dead: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="n").pack()
+	alive = tk.Label(frame_player1, text="Total Alive: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3)
+	alive.pack()
+	dead = tk.Label(frame_player1, text="Total Dead: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="n")
+	dead.pack()
+	p1Frame = [alive, dead]
 
 	#Player 2 side
 	frame_player2 = tk.Frame(root, width=300, height=200, highlightthickness=2, highlightbackground="black")
@@ -120,10 +128,11 @@ def main():
 	tk.Label(frame_player2, text="Additions done:  10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="n").pack()
 	#remining2 =
 	tk.Label(frame_player2, text="Remaining: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="s").pack()
-	#alive2 =
-	tk.Label(frame_player2, text="Total Alive: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3).pack()
-	#dead2 =
-	tk.Label(frame_player2, text="Total Dead: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="n").pack()
+	alive2 = tk.Label(frame_player2, text="Total Alive: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3)
+	alive2.pack()
+	dead2 = tk.Label(frame_player2, text="Total Dead: 10", bg="gray50", fg="black", font="Times 20", width=20, height=3, anchor="n")
+	dead2.pack()
+	p2Frame = [alive, dead]
 
 	#adding the boards to the GUI
 	frame_grid = tk.Frame(root, width=380, height=458, highlightthickness=2, highlightbackground="black")
@@ -131,7 +140,7 @@ def main():
 	frame_grid.place(x=304, y=275)
 	canvas = tk.Canvas(frame_grid, width=366, height=366)
 	canvas.pack()
-	p1Game = Game(canvas, root)
+	p1Game = Game(canvas, root, p1Frame)
 	#create_grid()
 	#canvas.bind("<Button-1>", change_colour_on_click)
 
@@ -141,7 +150,7 @@ def main():
 	canvas2 = tk.Canvas(frame_grid2, width=366, height=366)
 	canvas2.pack()
 ###insert player 2 grid here
-	p2Game = Game(canvas2, root)
+	p2Game = Game(canvas2, root, p2Frame)
 ###insert player 2 grid button listener here
 
 	updateDisplay(turnCounter, turn)

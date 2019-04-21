@@ -149,9 +149,10 @@ There are also instructions for how to play the various mini-games as well as th
 
 class Game:
 
-	def __init__(self, canvas, root, color = 'forest green', dead_color = 'green2'):
+	def __init__(self, canvas, root, pFrame, color = 'forest green', dead_color = 'green2'):
 		self.canvas = canvas
 		self.root = root
+		self.stats_frame = pFrame
 		self.grid = [] # Variable to store the Cell objects
 		self.rectangles = [] # Variable to store self.rectangles
 		self.begin_id = None
@@ -159,9 +160,17 @@ class Game:
 		self.color = color
 		self.dead_color = dead_color
 		self.create_grid()
-		self.num_alive = 0
-		self.total_painted = 0
+		self.total_alive = 0
+		self.total_dead = 0
 		self.canvas.bind("<Button-1>", self.change_colour_on_click)
+
+
+	# Function for updating the values for the player stats
+	def updateFrame(self):
+		alive = 0
+		dead = 1
+		self.stats_frame[alive].config(text = "Total Alive: " + str(self.total_alive))  
+		self.stats_frame[dead].config(text = "Total Dead: " + str(self.total_dead))  
 
 	# This function creates the board on which the game will take place
 	def create_grid(self):
@@ -195,14 +204,13 @@ class Game:
 				raise IndexError
 			if self.grid[ix][iy].isAlive:
 				self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
-				if self.num_alive > 0:
-					self.num_alive -= 1
+				self.total_dead += 1
 			else:
 				self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.color)
-				self.num_alive += 1
-				self.total_painted += 1
+				self.total_alive += 1
 			self.grid[ix][iy].switchStatus()
 			print(self.grid[ix][iy].pos_matrix, self.grid[ix][iy].pos_screen)
+			self.updateFrame()
 		except IndexError:
 			return
 
@@ -216,15 +224,15 @@ class Game:
 					if j.nextStatus:
 						self.canvas.itemconfig(self.rectangles[x][y], fill=self.color)
 						print("changed", j.pos_matrix, "from dead to alive")
-						self.num_alive += 1
-						self.total_painted += 1
+						self.total_alive += 1
 					else:
 						self.canvas.itemconfig(self.rectangles[x][y], fill=self.dead_color)
-						if self.num_alive > 0:
-							self.num_alive -= 1
+						self.total_dead += 1
 						print("changed", j.pos_matrix, "from alive to dead")
-						j.switchStatus()
-						print("Current status of", j.pos_matrix, j.isAlive)
+					j.switchStatus()
+					print("Current status of", j.pos_matrix, j.isAlive)
+				self.updateFrame()
+		print("Done painting")
 
 
 	def changeInStatus(self, cell):
