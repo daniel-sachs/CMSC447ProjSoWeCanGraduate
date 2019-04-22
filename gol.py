@@ -150,14 +150,14 @@ There are also instructions for how to play the various mini-games as well as th
 
 class Game:
 
-	def __init__(self, canvas, root, pFrame, color = 'forest green', dead_color = 'green2'):
+	def __init__(self, canvas, root, pFrame, gameSpeed, color = 'forest green', dead_color = 'green2'):
 		self.canvas = canvas
 		self.root = root
 		self.stats_frame = pFrame
 		self.grid = [] # Variable to store the Cell objects
 		self.rectangles = [] # Variable to store self.rectangles
 		self.begin_id = None
-		self.game_speed = 200
+		self.game_speed = gameSpeed
 		self.color = color
 		self.dead_color = dead_color
 		self.create_grid()
@@ -265,6 +265,7 @@ class Game:
 					print("change in", j.pos_matrix, "from", j.isAlive, "to", j.nextStatus)
 				else:
 					j.nextStatus = j.isAlive
+
 		self.paint_grid()
 		self.begin_id = self.root.after(self.game_speed, self.begin) # Can be used to change speed
 
