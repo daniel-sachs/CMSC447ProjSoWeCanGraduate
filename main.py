@@ -1,5 +1,5 @@
 #from Tkinter import *
-import tkinter as tk
+import Tkinter as tk
 from time import sleep
 from gol import Menubar, Game, SpeedUp
 from functools import partial
