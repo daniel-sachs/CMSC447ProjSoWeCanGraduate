@@ -1,6 +1,7 @@
 import tkinter as tk
 from threading import Timer
 
+
 #-------------------------------------------------------------------
 # Helper Functions
 #-------------------------------------------------------------------
@@ -9,6 +10,12 @@ from threading import Timer
 def SpeedUp(p1, p2, speed = 2):
 	p1.game_speed *= speed
 	p2.game_speed *= speed
+
+def end_of_game(p1, p2):
+	t = Timer(1.5, p1.root.quit)
+	t.start()
+
+
 #-------------------------------------------------------------------
 
 
@@ -163,6 +170,7 @@ class Game:
 		self.create_grid()
 		self.total_alive = 0
 		self.total_dead = 0
+		self.cells_left = 15
 		self.canvas.bind("<Button-1>", self.change_colour_on_click)
 
 
@@ -196,24 +204,30 @@ class Game:
 
 	# Change the colour of the clicked self.grid and change the status of cell in the self.grid
 	def change_colour_on_click(self, event):
-		print(event.x, event.y)
-		x, y = self.find_rect_coordinates(event.x, event.y)
-		try:
-			iy = int(x / 10 - 1)
-			ix = int(y / 10 - 1)
-			if ix == -1 or iy == -1:
-				raise IndexError
-			if self.grid[ix][iy].isAlive:
-				self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
-				self.total_dead += 1
-			else:
-				self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.color)
-				self.total_alive += 1
-			self.grid[ix][iy].switchStatus()
-			print(self.grid[ix][iy].pos_matrix, self.grid[ix][iy].pos_screen)
-			self.updateFrame()
-		except IndexError:
-			return
+		if self.cells_left == 0:
+			print("no cells left")
+		else:
+			print(event.x, event.y)
+			x, y = self.find_rect_coordinates(event.x, event.y)
+			try:
+				iy = int(x / 10 - 1)
+				ix = int(y / 10 - 1)
+				if ix == -1 or iy == -1:
+					raise IndexError
+				if self.grid[ix][iy].isAlive:
+					self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
+					self.total_dead += 1
+				else:
+					self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.color)
+					self.total_alive += 1
+				self.grid[ix][iy].switchStatus()
+				print(self.grid[ix][iy].pos_matrix, self.grid[ix][iy].pos_screen)
+				self.updateFrame()
+			except IndexError:
+				return
+			print("clicked")
+			self.cells_left = self.cells_left - 1
+			print("one less cell now")
 
 
 	def paint_grid(self):
@@ -271,6 +285,7 @@ class Game:
 
 
 	def stop(self):
+		self.cells_left = 15
 		self.root.after_cancel(self.begin_id)
 
 #-------------------------------------------------------------------

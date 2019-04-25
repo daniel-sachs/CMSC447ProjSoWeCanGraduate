@@ -1,43 +1,51 @@
 #from Tkinter import *
-import Tkinter as tk
+import tkinter as tk
+from threading import Timer
 from time import sleep
-from gol import Menubar, Game, SpeedUp
+from gol import Menubar, Game, SpeedUp, end_of_game
 from functools import partial
 
 
-def begin_game(turnCounter, turn, speed):
-	updateDisplay(turnCounter, turn, speed)
+def begin_game(turnCounter, iters, turns, speed):
+	updateDisplay(turnCounter, iters, turns, speed)
 	p1Game.begin()
 	p2Game.begin()
+
 
 
 def stop_game():
 	p1Game.stop()
 	p2Game.stop()
 
-
 def speed_up():
 	SpeedUp(p1Game,p2Game)
 
 # Manages the changes made to the game's main display
-def updateDisplay(turnLabel, turn, speed):
+def updateDisplay(turnLabel, iters, turns, speed):
 
-    #update the day' label.
-	turnLabel.config(text = str(turn))   
+	# have to hit start to end the game. need to figure this out
 
-    #run the function again after 200ms.
-	if turn == 0:
+    # run the function again after certain speed.
+	if iters == 0:
+		turns[0] = turns[0] - 1
+		# update display label
+		turnLabel.config(text=str(turns[0]))
 		stop_game()
+
 	else:
-		turnLabel.after(speed, updateDisplay, turnLabel, turn - 1, speed)
+		turnLabel.after(speed, updateDisplay, turnLabel, iters - 1, turns, speed)
+
+	if turns[0] == 0:
+		end_of_game(p1Game, p2Game)
 
 
 def main():
 
 	global p1Game
 	global p2Game
-	turn = 20
-	gameSpeed = 250
+	iterations = 20
+	turn = [20]
+	gameSpeed = 200
 
 	# Player colors, list[0] = alive color, list[1] = dead color
 	green = ['forest green','green2']
@@ -67,14 +75,14 @@ def main():
 	frame_counter = tk.Frame(root, width=300, height=200, highlightthickness=3, highlightbackground="black")
 	frame_counter.pack()
 	frame_counter.place(x=618, y=86)
-	turnCounter = tk.Label(frame_counter, text=str(turn), bg="gray79", fg="black", font="Times 45", height=1, width=6)
+	turnCounter = tk.Label(frame_counter, text=str(turn[0]), bg="gray79", fg="black", font="Times 45", height=1, width=6)
 	turnCounter.pack()
 
 	frame_buttons = tk.Frame(root, width=200, height=300, highlightthickness=2, highlightbackground="black")
 	frame_buttons.pack()
 	frame_buttons.place(x=400, y=93)
 	#start =
-	tk.Button(frame_buttons, text="Start!", command=partial(begin_game, turnCounter, turn, gameSpeed), width=10).pack()
+	tk.Button(frame_buttons, text="Start!", command=partial(begin_game, turnCounter, iterations, turn, gameSpeed), width=10).pack()
 	#stop =
 	tk.Button(frame_buttons, text="Stop!", command=stop_game, width=10).pack()
 	#setTurn =
