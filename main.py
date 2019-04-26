@@ -95,7 +95,7 @@ def main():
 	speed_slider.set(100)
 	speed_slider.pack()
 
-	frame_Banner = tk.Frame(root, width=300, height=200, highlightthickness=2, highlightbackground="black")
+	frame_Banner = tk.Frame(root, width=300, height=200, highlightthickness=3, highlightbackground="black")
 	frame_Banner.pack()
 	frame_Banner.place(x=288, y=198)
 	#player1Title =
@@ -132,7 +132,7 @@ def main():
 	#Player 2 side
 	frame_player2 = tk.Frame(root, width=300, height=200, highlightthickness=2, highlightbackground="black")
 	frame_player2.pack()
-	frame_player2.place(x=root.winfo_screenwidth()-420, y=200)
+	frame_player2.place(x=1400-280, y=200)
 	#stats2 =
 	tk.Label(frame_player2, text="Player 2 Stats", bg="gray25", fg="snow", font=(None, "25")).pack(fill="both")
 	#cellToChange2 =
