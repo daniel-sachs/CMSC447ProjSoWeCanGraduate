@@ -42,7 +42,9 @@ def main():
     global p2Game
     iterations = 20
     turn = [20]
-    defaultSpeed = 200
+    max_speed = 300
+    default_speed = max_speed * 2
+    min_speed = default_speed + max_speed
     defaultCells = 15
 
     # Player colors, list[0] = alive color, list[1] = dead color
@@ -80,7 +82,7 @@ def main():
     frame_buttons.pack()
     frame_buttons.place(x=400, y=93)
     #start =
-    tk.Button(frame_buttons, text="Start!", command=partial(begin_game, turnCounter, iterations, turn, defaultSpeed), width=10).pack()
+    tk.Button(frame_buttons, text="Start!", command=partial(begin_game, turnCounter, iterations, turn, default_speed), width=10).pack()
     #stop =
     tk.Button(frame_buttons, text="Stop!", command=stop_game, width=10).pack()
     #setTurn =
@@ -89,10 +91,9 @@ def main():
     frame_slider = tk.Frame(root, width=200, height=80, highlightthickness=2, highlightbackground="black")
     frame_slider.pack()
     frame_slider.place(x=850, y=125)
-    speed_slider = tk.Scale(frame_slider, from_=0, to=400, orient="horizontal", length=200)
-    speed_slider.set(defaultSpeed)
+    speed_slider = tk.Scale(frame_slider, from_=max_speed, to=min_speed, orient="horizontal", length=200, command = set_speed)
+    speed_slider.set(default_speed)
     speed_slider.pack()
-    #defaultSpeed = speed_slider * 2
 
     frame_Banner = tk.Frame(root, width=300, height=200, highlightthickness=3, highlightbackground="black")
     frame_Banner.pack()
@@ -122,7 +123,7 @@ def main():
     alive.pack()
     dead = tk.Label(frame_player1, text="Dead Cells: 0", bg="gray50", fg="black", font=(None, "15"), width=19, height=3, anchor="n")
     dead.pack()
-    p1Frame = [cellToChange, remaining, alive, dead, speed_slider]
+    p1Frame = [cellToChange, remaining, alive, dead]
 
     #Player 2 side
     frame_player2 = tk.Frame(root, width=300, height=200, highlightthickness=2, highlightbackground="black")
@@ -138,7 +139,7 @@ def main():
     alive2.pack()
     dead2 = tk.Label(frame_player2, text="Dead Cells: 0", bg="gray50", fg="black", font=(None, "15"), width=20, height=3, anchor="n")
     dead2.pack()
-    p2Frame = [cellToChange2, remaining2, alive2, dead2, speed_slider]
+    p2Frame = [cellToChange2, remaining2, alive2, dead2]
 
     #adding the boards to the GUI
     frame_grid = tk.Frame(root, width=380, height=458, highlightthickness=2, highlightbackground="black")
@@ -146,7 +147,7 @@ def main():
     frame_grid.place(x=304, y=260)
     canvas = tk.Canvas(frame_grid, width=366, height=366)
     canvas.pack()
-    p1Game = Game(canvas, root, p1Frame, defaultSpeed, True,  green[0], green[1], defaultCells)
+    p1Game = Game(canvas, root, p1Frame, default_speed, True,  green[0], green[1], defaultCells)
     #create_grid()
     #scanvas.bind("<Button-1>", change_colour_on_click)
 
@@ -156,7 +157,7 @@ def main():
     canvas2 = tk.Canvas(frame_grid2, width=366, height=366)
     canvas2.pack()
 ###insert player 2 grid here
-    p2Game = Game(canvas2, root, p2Frame, defaultSpeed, False, blue[0], blue[1], defaultCells)
+    p2Game = Game(canvas2, root, p2Frame, default_speed, False, blue[0], blue[1], defaultCells)
     p1Game.adversary = p2Game
     p2Game.adversary = p1Game
 ###insert player 2 grid button listener her

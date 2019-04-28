@@ -159,18 +159,16 @@ class Game:
 	def updateRemaining(self):
 		remaining = 1
 		num_white = self.board_size - self.total_alive
-		self.stats_frame[remaining].config(text = "Remaining White: %.2f" % (num_white / self.board_size * 100) + "%")
+		self.stats_frame[remaining].config(text = "Remaining White: %.2f" % ((num_white / self.board_size) * 100) + "%")
 
   # Function for updating the values for the player stats
 	def updateFrame(self):
 		cellToChange = 0
 		alive = 2
 		dead = 3
-		speed_slider = 4
 		self.stats_frame[cellToChange].config(text = "Cells to Change: " + str(self.cells_left))
 		self.stats_frame[alive].config(text = "Score: " + str(self.total_alive))
 		self.stats_frame[dead].config(text = "Dead Cells: " + str(self.total_dead))
-		#self.game_speed = self.stats_frame[speed_slider].get() # This line updates the game speed
 
     # This function creates the board on which the game will take place
 	def create_grid(self):
