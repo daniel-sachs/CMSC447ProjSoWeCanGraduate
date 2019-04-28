@@ -11,8 +11,6 @@ def begin_game(turnCounter, iters, turns, speed):
     p1Game.begin()
     p2Game.begin()
 
-
-
 def stop_game():
     p1Game.stop()
     p2Game.stop()
@@ -45,6 +43,7 @@ def main():
     iterations = 20
     turn = [20]
     defaultSpeed = 200
+    defaultCells = 15
 
     # Player colors, list[0] = alive color, list[1] = dead color
     green = ['forest green','green2']
@@ -115,13 +114,13 @@ def main():
     frame_player1.place(x=50, y=200)
     #stats =
     tk.Label(frame_player1, text="Player 1 Stats", bg="gray25", fg="snow", font=(None, "25")).pack(fill="both")
-    cellToChange = tk.Label(frame_player1, text="Cells to Change:  10", bg="gray50", fg="black", font=(None, "15"), width=19, height=3, anchor="s")
+    cellToChange = tk.Label(frame_player1, text="Cells to Change:  " + str(defaultCells), bg="gray50", fg="black", font=(None, "15"), width=19, height=3, anchor="s")
     cellToChange.pack()
-    remaining = tk.Label(frame_player1, text="Remaining White: 10", bg="gray50", fg="black", font=(None, "15"), width=19, height=3, anchor="s")
+    remaining = tk.Label(frame_player1, text="Remaining White: 100%", bg="gray50", fg="black", font=(None, "15"), width=19, height=3, anchor="s")
     remaining.pack()
-    alive = tk.Label(frame_player1, text="Score: 10", bg="gray50", fg="black", font=(None, "15"), width=19, height=3)
+    alive = tk.Label(frame_player1, text="Score: 0", bg="gray50", fg="black", font=(None, "15"), width=19, height=3)
     alive.pack()
-    dead = tk.Label(frame_player1, text="Dead Cells: 10", bg="gray50", fg="black", font=(None, "15"), width=19, height=3, anchor="n")
+    dead = tk.Label(frame_player1, text="Dead Cells: 0", bg="gray50", fg="black", font=(None, "15"), width=19, height=3, anchor="n")
     dead.pack()
     p1Frame = [cellToChange, remaining, alive, dead, speed_slider]
 
@@ -131,13 +130,13 @@ def main():
     frame_player2.place(x=1400-280, y=200)
     #stats2 =
     tk.Label(frame_player2, text="Player 2 Stats", bg="gray25", fg="snow", font=(None, "25")).pack(fill="both")
-    cellToChange2 = tk.Label(frame_player2, text="Cells to Change:  10", bg="gray50", fg="black", font=(None, "15"), width=20, height=3, anchor="s")
+    cellToChange2 = tk.Label(frame_player2, text="Cells to Change:  " + str(defaultCells), bg="gray50", fg="black", font=(None, "15"), width=20, height=3, anchor="s")
     cellToChange2.pack()
-    remaining2 = tk.Label(frame_player2, text="Remaining White: 10", bg="gray50", fg="black", font=(None, "15"), width=20, height=3, anchor="s")
+    remaining2 = tk.Label(frame_player2, text="Remaining White: 100%", bg="gray50", fg="black", font=(None, "15"), width=20, height=3, anchor="s")
     remaining2.pack()
-    alive2 = tk.Label(frame_player2, text="Score: 10", bg="gray50", fg="black", font=(None, "15"), width=20, height=3)
+    alive2 = tk.Label(frame_player2, text="Score: 0", bg="gray50", fg="black", font=(None, "15"), width=20, height=3)
     alive2.pack()
-    dead2 = tk.Label(frame_player2, text="Dead Cells: 10", bg="gray50", fg="black", font=(None, "15"), width=20, height=3, anchor="n")
+    dead2 = tk.Label(frame_player2, text="Dead Cells: 0", bg="gray50", fg="black", font=(None, "15"), width=20, height=3, anchor="n")
     dead2.pack()
     p2Frame = [cellToChange2, remaining2, alive2, dead2, speed_slider]
 
@@ -147,7 +146,7 @@ def main():
     frame_grid.place(x=304, y=260)
     canvas = tk.Canvas(frame_grid, width=366, height=366)
     canvas.pack()
-    p1Game = Game(canvas, root, p1Frame, defaultSpeed, True,  green[0], green[1])
+    p1Game = Game(canvas, root, p1Frame, defaultSpeed, True,  green[0], green[1], defaultCells)
     #create_grid()
     #scanvas.bind("<Button-1>", change_colour_on_click)
 
@@ -157,7 +156,7 @@ def main():
     canvas2 = tk.Canvas(frame_grid2, width=366, height=366)
     canvas2.pack()
 ###insert player 2 grid here
-    p2Game = Game(canvas2, root, p2Frame, defaultSpeed, False, blue[0], blue[1])
+    p2Game = Game(canvas2, root, p2Frame, defaultSpeed, False, blue[0], blue[1], defaultCells)
     p1Game.adversary = p2Game
     p2Game.adversary = p1Game
 ###insert player 2 grid button listener her

@@ -10,12 +10,10 @@ from threading import Timer
 def SetSpeed(p1, p2, speed = 200):
     p1.game_speed = speed
     p2.game_speed = speed
-
+#-------------------------------------------------------------------
 def end_of_game(p1, p2):
     t = Timer(1.5, p1.root.quit)
     t.start()
-
-
 #-------------------------------------------------------------------
 
 
@@ -136,7 +134,7 @@ This is the menu where you can find the instructions for the game. There are ins
 
 class Game:
 	
-	def __init__(self, canvas, root, pFrame, gameSpeed, my_turn, color = 'forest green', dead_color = 'green2', adversary = None):
+	def __init__(self, canvas, root, pFrame, gameSpeed, my_turn, color = 'forest green', dead_color = 'green2', cells_left = 15, adversary = None):
 		self.canvas = canvas
 		self.root = root
 		self.stats_frame = pFrame
@@ -151,23 +149,25 @@ class Game:
 		self.create_grid()
 		self.total_alive = 0
 		self.total_dead = 0
-		self.cells_left = 15
+		self.cells_left = cells_left
 		self.canvas.bind("<Button-1>", self.change_colour_on_click)
 		self.adversary = adversary
 		self.my_turn = my_turn
 		self.original_turn = my_turn
 
 
-    # Function for updating the values for the player stats
+	def updateRemaining(self):
+		remaining = 1
+		num_white = self.board_size - self.total_alive
+		self.stats_frame[remaining].config(text = "Remaining White: %.2f" % (num_white / self.board_size * 100) + "%")
+
+  # Function for updating the values for the player stats
 	def updateFrame(self):
 		cellToChange = 0
-		remaining = 1
 		alive = 2
 		dead = 3
 		speed_slider = 4
 		self.stats_frame[cellToChange].config(text = "Cells to Change: " + str(self.cells_left))
-		num_white = self.board_size - self.total_alive
-		self.stats_frame[remaining].config(text = "Remaining White: %.2f" % (num_white / self.board_size * 100) + "%")
 		self.stats_frame[alive].config(text = "Score: " + str(self.total_alive))
 		self.stats_frame[dead].config(text = "Dead Cells: " + str(self.total_dead))
 		#self.game_speed = self.stats_frame[speed_slider].get() # This line updates the game speed
@@ -195,12 +195,13 @@ class Game:
 
     # Change the colour of the clicked self.grid and change the status of cell in the self.grid
 	def change_colour_on_click(self, event):
-		if self.cells_left == 0:
-			print("no cells left and player 1 turn over")
+		if self.cells_left <= 0:
+			self.updateRemaining()
+			print("no cells left and player turn over")
 			self.my_turn = False
             
 		elif self.cells_left > 0 and self.adversary.my_turn != True:
-			print(event.x, event.y)
+			#print(event.x, event.y)
 			x, y = self.find_rect_coordinates(event.x, event.y)
 			try:
 				iy = int(x / 10 - 1)
@@ -214,14 +215,14 @@ class Game:
 					self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.color)
 					self.total_alive += 1
 				self.grid[ix][iy].switchStatus()
-				print(self.grid[ix][iy].pos_matrix, self.grid[ix][iy].pos_screen)
+				#print(self.grid[ix][iy].pos_matrix, self.grid[ix][iy].pos_screen)
 				self.updateFrame()
 			except IndexError:
 				return
-			print("clicked")
-			self.cells_left = self.cells_left - 1
+			#print("clicked")
+			self.cells_left -= 1 #self.cells_left - 1
 			self.updateFrame()
-			print("one less cell now")
+			#print("one less cell now")
 
 
 	def paint_grid(self):
@@ -229,19 +230,19 @@ class Game:
 			for j in i:
 				if j.nextStatus != j.isAlive:
 					x, y = j.pos_matrix
-					print(x, y)
+					#print(x, y)
 					if j.nextStatus:
 						self.canvas.itemconfig(self.rectangles[x][y], fill=self.color)
-						print("changed", j.pos_matrix, "from dead to alive")
+						#print("changed", j.pos_matrix, "from dead to alive")
 						self.total_alive += 1
 					else:
 						self.canvas.itemconfig(self.rectangles[x][y], fill=self.dead_color)
 						self.total_dead += 1
-						print("changed", j.pos_matrix, "from alive to dead")
+						#print("changed", j.pos_matrix, "from alive to dead")
 					j.switchStatus()
-					print("Current status of", j.pos_matrix, j.isAlive)
+					#print("Current status of", j.pos_matrix, j.isAlive)
 				self.updateFrame()
-		print("Done painting")
+		#print("Done painting")
 
 
 	def changeInStatus(self, cell):
@@ -270,7 +271,7 @@ class Game:
 			for j in i:
 				if self.changeInStatus(j):
 					j.nextStatus = not j.isAlive
-					print("change in", j.pos_matrix, "from", j.isAlive, "to", j.nextStatus)
+					#print("change in", j.pos_matrix, "from", j.isAlive, "to", j.nextStatus)
 				else:
 					j.nextStatus = j.isAlive
 
@@ -279,6 +280,7 @@ class Game:
 
 
 	def stop(self):
+		self.updateRemaining()
 		self.cells_left = 15
 		self.updateFrame()
 		self.my_turn = self.original_turn
