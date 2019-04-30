@@ -5,35 +5,49 @@ from time import sleep
 from gol import Menubar, Game, SetSpeed, end_of_game
 from functools import partial
 
+# Creates the window that will be displated for the prompt and takes input
+def promptWindow(prompt, info_list):
+    # Function that apppens user input
+        def evaluate(event):
+            info_list.append(entry.get())
+            res.configure(text = "You entered: " + str(entry.get()))
+
+        # Getting the player's name
+        w = tk.Tk()
+        # Gets the requested values of the height and widht.
+        windowWidth = w.winfo_reqwidth()
+        windowHeight = w.winfo_reqheight()
+        print("Width",windowWidth,"Height",windowHeight)
+
+        # Gets both half the screen width/height and window width/height
+        positionRight = int(w.winfo_screenwidth()/2 - windowWidth/2)
+        positionDown = int(w.winfo_screenheight()/2 - windowHeight/2)
+
+        # Positions the window in the center of the page.
+        w.geometry("+{}+{}".format(positionRight, positionDown))
+
+        # Popup that will display to user
+        tk.Label(w, text=prompt).pack()
+        entry = tk.Entry(w)
+        entry.bind("<Return>", evaluate)
+        entry.pack()
+        res = tk.Label(w)
+        res.pack()
+        exitButton = tk.Button(w, text = "Next", command = w.destroy)
+        exitButton.pack()
+        w.mainloop()
+
 # Getting color and name info for players
 def getInfo(num_players):
     info = []
+    color_prompt = "Please pick a color from one of the following (type the number): \n 1.Green 2.Blue 3.Red 4.Purple \n (Press \'Enter\' when you are finished)"
+    name_prompt = " enter your name below: \n (Press \'Enter\' when you are finished)"
+
+    # Loops for the number of players
     for i in range(num_players):
-        master = tk.Tk()
-        master.title("Getting Started")
-        color_prompt = "Please pick a color from one of the following (type the number): \n 1.Green 2.Blue 3.Red 4.Purple"
-        name_prompt = "Player " + str(i + 1) + " enter your name below:"
-        label1 = tk.Label(master, text=color_prompt)
-        label1.grid(row=0)
-        label1.pack()
-        e1 = tk.Entry(master)
-        e1.grid(row=0, column=1)
-        e1.pack()
-
-        label2 = tk.Label(master, text=name_prompt)
-        label2.grid(row=4)
-        label2.pack()
-        e2 = tk.Entry(master)
-        e2.grid(row=4, column=4)
-        e2.pack()
-        
-        exitButton = tk.Button(master, text = "Done", command = master.destroy)
-        exitButton.pack()
-
-        info.append(e1.get())
-        print(e1.get())
-        info.append(e2.get())
-    master.mainloop()
+        name_prompt = "Player " + str(i + 1) + name_prompt
+        promptWindow(name_prompt, info)
+        promptWindow(color_prompt, info)
     return info
 
 def begin_game(turnCounter, iters, turns, speed):
@@ -90,10 +104,10 @@ def main():
 
 
     game_info = getInfo(2)
-    p1_color = (int(game_info[0]) - 1) % 4
-    p1_name = game_info[1]
-    p2_color = (int(game_info[2]) - 1) % 4
-    p2_name = game_info[3]
+    p1_name = game_info[0]
+    p1_color = (int(game_info[1]) - 1) % 4
+    p2_name = game_info[2]
+    p2_color = (int(game_info[3]) - 1) % 4
 
     # Building the screen
     root = tk.Tk()
