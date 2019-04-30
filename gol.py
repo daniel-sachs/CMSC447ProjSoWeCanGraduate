@@ -30,14 +30,14 @@ class Cell:
         self.pos_matrix = (i, j)
         self.player = player
 
-	def __str__(self):
-		return str(self.isAlive)
+    def __str__(self):
+        return str(self.isAlive)
 
-	def __repr__(self):
-		return str(self.isAlive)
+    def __repr__(self):
+        return str(self.isAlive)
 
-	def switchStatus(self):
-		self.isAlive = not self.isAlive
+    def switchStatus(self):
+        self.isAlive = not self.isAlive
 
 #-------------------------------------------------------------------
 
@@ -134,75 +134,63 @@ Exit this help menu by pressing 'quit' to the right of this text"
 #---------------------------------------------------------------------
 
 class Game:
-	
-	def __init__(self, canvas, root, pFrame, gameSpeed, my_turn, color = 'forest green', dead_color = 'green2', cells_left = 15, adversary = None, turnLabel=None):
-		self.canvas = canvas
-		self.root = root
-		self.stats_frame = pFrame
-		self.grid = [] # Variable to store the Cell objects
-		self.rectangles = [] # Variable to store self.rectangles
-		self.begin_id = None
-		self.game_speed = gameSpeed
-		self.color = color
-		self.dead_color = dead_color
-		self.board_len = 35
-		self.board_size = self.board_len ** 2
-		self.create_grid()
-		self.total_alive = 0
-		self.total_dead = 0
-		self.cells_left = cells_left
-		self.canvas.bind("<Button-1>", self.change_colour_on_click)
-		self.adversary = adversary
-		self.my_turn = my_turn
-		self.original_turn = my_turn
-		self.turnLabel = turnLabel # should be a 3-tuple containing the element to show and its x and y position
-		if self.my_turn:
-			self.turnLabel[0].place(x=self.turnLabel[1], y=self.turnLabel[2])
 
-	# shows the label declaring it is this player's turn
-	def showMyTurn(self):
-		self.turnLabel[0].place(x=self.turnLabel[1], y=self.turnLabel[2])
+    def __init__(self, canvas, root, pFrame, gameSpeed, player, global_turn, color = 'forest green', dead_color = 'green2', cells_left = 15, adversary = None):
+        self.canvas = canvas
+        self.root = root
+        self.stats_frame = pFrame
+        self.player = player
+        self.global_turn = global_turn
+        self.original_turn = global_turn
+        self.grid = [] # Variable to store the Cell objects
+        self.rectangles = [] # Variable to store self.rectangles
+        self.begin_id = None
+        self.game_speed = gameSpeed
+        self.color = color
+        self.dead_color = dead_color
+        self.board_len = 35
+        self.board_size = self.board_len ** 2
+        self.create_grid()
+        self.total_alive = 0
+        self.total_dead = 0
+        self.cells_left = cells_left
+        self.canvas.bind("<Button-1>", self.change_colour_on_click)
+        self.adversary = adversary
 
-	# returns number of cells player may change this turn
-	def getCellsLeft(self):
-		return(self.cells_left)
-	
-	def updateRemaining(self):
-		self.turnLabel[0].place_forget()
-		if self.adversary.getCellsLeft() > 0:
-			self.adversary.showMyTurn()
-		remaining = 1
-		num_white = self.board_size - self.total_alive
-		self.stats_frame[remaining].config(text = "Remaining White: %.2f" % ((num_white / self.board_size) * 100) + "%")
+
+    def updateRemaining(self):
+        remaining = 1
+        num_white = self.board_size - self.total_alive
+        self.stats_frame[remaining].config(text = "Remaining White: %.2f" % ((num_white / self.board_size) * 100) + "%")
 
   # Function for updating the values for the player stats
-	def updateFrame(self):
-		cellToChange = 0
-		alive = 2
-		dead = 3
-		self.stats_frame[cellToChange].config(text = "Cells to Change: " + str(self.cells_left))
-		self.stats_frame[alive].config(text = "Score: " + str(self.total_alive))
-		self.stats_frame[dead].config(text = "Dead Cells: " + str(self.total_dead))
+    def updateFrame(self):
+        cellToChange = 0
+        alive = 2
+        dead = 3
+        self.stats_frame[cellToChange].config(text = "Cells to Change: " + str(self.cells_left))
+        self.stats_frame[alive].config(text = "Score: " + str(self.total_alive))
+        self.stats_frame[dead].config(text = "Dead Cells: " + str(self.total_dead))
 
     # This function creates the board on which the game will take place
-	def create_grid(self):
-		x = 10
-		y = 10
-		for i in range(self.board_len): #height
-			self.grid.append([])
-			self.rectangles.append([])
-			for j in range(self.board_len): #width
-				rect = self.canvas.create_rectangle(x, y, x+10, y+10, fill="white")
-				self.rectangles[i].append(rect)
-				self.grid[i].append(Cell(x, y, i, j))
-				x += 10
-			x = 10
-			y += 10
+    def create_grid(self):
+        x = 10
+        y = 10
+        for i in range(self.board_len): #height
+            self.grid.append([])
+            self.rectangles.append([])
+            for j in range(self.board_len): #width
+                rect = self.canvas.create_rectangle(x, y, x+10, y+10, fill="white")
+                self.rectangles[i].append(rect)
+                self.grid[i].append(Cell(x, y, i, j, self.player))
+                x += 10
+            x = 10
+            y += 10
 
 
     # Find the co-ordinates of the rectangle which has been clicked
-	def find_rect_coordinates(self, x, y):
-		return (x- x%10, y - y%10)
+    def find_rect_coordinates(self, x, y):
+        return (x- x%10, y - y%10)
 
 
     # Change the colour of the clicked self.grid and change the status of cell in the self.grid
