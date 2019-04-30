@@ -292,6 +292,7 @@ class Game:
 
             self.grid[ix][iy].switchStatus()
             self.updateFrame()
+            self.adversary.updateFrame()
         except IndexError:
             return
         self.updateFrame()
