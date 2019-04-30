@@ -2,7 +2,7 @@
 import tkinter as tk
 from threading import Timer
 from time import sleep
-from gol import Menubar, Game, SpeedUp, end_of_game
+from gol import Menubar, Game, SetSpeed, end_of_game
 from functools import partial
 
 
@@ -11,14 +11,12 @@ def begin_game(turnCounter, iters, turns, speed):
     p1Game.begin()
     p2Game.begin()
 
-
-
 def stop_game():
     p1Game.stop()
     p2Game.stop()
 
-def speed_up():
-    SpeedUp(p1Game,p2Game)
+def set_speed(val):
+    SetSpeed(p1Game,p2Game, val)
 
 # Manages the changes made to the game's main display
 def updateDisplay(turnLabel, iters, turns, speed):
@@ -44,7 +42,10 @@ def main():
     global p2Game
     iterations = 20
     turn = [20]
-    gameSpeed = 200
+    max_speed = 300
+    default_speed = max_speed * 2
+    min_speed = default_speed + max_speed
+    defaultCells = 15
 
     # Player colors, list[0] = alive color, list[1] = dead color
     green = ['forest green','green2']
@@ -81,7 +82,7 @@ def main():
     frame_buttons.pack()
     frame_buttons.place(x=400, y=93)
     #start =
-    tk.Button(frame_buttons, text="Start!", command=partial(begin_game, turnCounter, iterations, turn, gameSpeed), width=10).pack()
+    tk.Button(frame_buttons, text="Start!", command=partial(begin_game, turnCounter, iterations, turn, default_speed), width=10).pack()
     #stop =
     tk.Button(frame_buttons, text="Stop!", command=stop_game, width=10).pack()
     #setTurn =
@@ -90,8 +91,8 @@ def main():
     frame_slider = tk.Frame(root, width=200, height=80, highlightthickness=2, highlightbackground="black")
     frame_slider.pack()
     frame_slider.place(x=850, y=125)
-    speed_slider = tk.Scale(frame_slider, from_=0, to=200, orient="horizontal", length=200)
-    speed_slider.set(100)
+    speed_slider = tk.Scale(frame_slider, from_=max_speed, to=min_speed, orient="horizontal", length=200, command = set_speed)
+    speed_slider.set(default_speed)
     speed_slider.pack()
 
     frame_Banner = tk.Frame(root, width=300, height=200, highlightthickness=3, highlightbackground="black")
@@ -114,19 +115,15 @@ def main():
     frame_player1.place(x=50, y=200)
     #stats =
     tk.Label(frame_player1, text="Player 1 Stats", bg="gray25", fg="snow", font=(None, "25")).pack(fill="both")
-    #cellToChange =
-    tk.Label(frame_player1, text="Cells to Change:  10", bg="gray50", fg="black", font=(None, "15"), width=19, height=3, anchor="s").pack()
-    #deletion =
-    tk.Label(frame_player1, text="Deletions done:  10", bg="gray50", fg="black", font=(None, "15"), width=19, height=3).pack()
-    #addition =
-    tk.Label(frame_player1, text="Additions done:  10", bg="gray50", fg="black", font=(None, "15"), width=19, height=3, anchor="n").pack()
-    #remining =
-    tk.Label(frame_player1, text="Remaining: 10", bg="gray50", fg="black", font=(None, "15"), width=19, height=3, anchor="s").pack()
-    alive = tk.Label(frame_player1, text="Total Alive: 10", bg="gray50", fg="black", font=(None, "15"), width=19, height=3)
+    cellToChange = tk.Label(frame_player1, text="Cells to Change:  " + str(defaultCells), bg="gray50", fg="black", font=(None, "15"), width=19, height=3, anchor="s")
+    cellToChange.pack()
+    remaining = tk.Label(frame_player1, text="Remaining White: 100%", bg="gray50", fg="black", font=(None, "15"), width=19, height=3, anchor="s")
+    remaining.pack()
+    alive = tk.Label(frame_player1, text="Score: 0", bg="gray50", fg="black", font=(None, "15"), width=19, height=3)
     alive.pack()
-    dead = tk.Label(frame_player1, text="Total Dead: 10", bg="gray50", fg="black", font=(None, "15"), width=19, height=3, anchor="n")
+    dead = tk.Label(frame_player1, text="Dead Cells: 0", bg="gray50", fg="black", font=(None, "15"), width=19, height=3, anchor="n")
     dead.pack()
-    p1Frame = [alive, dead]
+    p1Frame = [cellToChange, remaining, alive, dead]
 
     #Player 2 side
     frame_player2 = tk.Frame(root, width=300, height=200, highlightthickness=2, highlightbackground="black")
@@ -134,19 +131,15 @@ def main():
     frame_player2.place(x=1400-280, y=200)
     #stats2 =
     tk.Label(frame_player2, text="Player 2 Stats", bg="gray25", fg="snow", font=(None, "25")).pack(fill="both")
-    #cellToChange2 =
-    tk.Label(frame_player2, text="Cells to Change:  10", bg="gray50", fg="black", font=(None, "15"), width=20, height=3, anchor="s").pack()
-    #deletion2 =
-    tk.Label(frame_player2, text="Deletions done:  10", bg="gray50", fg="black", font=(None, "15"), width=20, height=3).pack()
-    #addition2 =
-    tk.Label(frame_player2, text="Additions done:  10", bg="gray50", fg="black", font=(None, "15"), width=20, height=3, anchor="n").pack()
-    #remining2 =
-    tk.Label(frame_player2, text="Remaining: 10", bg="gray50", fg="black", font=(None, "15"), width=20, height=3, anchor="s").pack()
-    alive2 = tk.Label(frame_player2, text="Total Alive: 10", bg="gray50", fg="black", font=(None, "15"), width=20, height=3)
+    cellToChange2 = tk.Label(frame_player2, text="Cells to Change:  " + str(defaultCells), bg="gray50", fg="black", font=(None, "15"), width=20, height=3, anchor="s")
+    cellToChange2.pack()
+    remaining2 = tk.Label(frame_player2, text="Remaining White: 100%", bg="gray50", fg="black", font=(None, "15"), width=20, height=3, anchor="s")
+    remaining2.pack()
+    alive2 = tk.Label(frame_player2, text="Score: 0", bg="gray50", fg="black", font=(None, "15"), width=20, height=3)
     alive2.pack()
-    dead2 = tk.Label(frame_player2, text="Total Dead: 10", bg="gray50", fg="black", font=(None, "15"), width=20, height=3, anchor="n")
+    dead2 = tk.Label(frame_player2, text="Dead Cells: 0", bg="gray50", fg="black", font=(None, "15"), width=20, height=3, anchor="n")
     dead2.pack()
-    p2Frame = [alive, dead]
+    p2Frame = [cellToChange2, remaining2, alive2, dead2]
 
     #adding the boards to the GUI
     frame_grid = tk.Frame(root, width=380, height=458, highlightthickness=2, highlightbackground="black")
@@ -154,7 +147,7 @@ def main():
     frame_grid.place(x=304, y=260)
     canvas = tk.Canvas(frame_grid, width=366, height=366)
     canvas.pack()
-    p1Game = Game(canvas, root, p1Frame, gameSpeed, True,  green[0], green[1])
+    p1Game = Game(canvas, root, p1Frame, default_speed, 1, 1, green[0], green[1], defaultCells)
     #create_grid()
     #scanvas.bind("<Button-1>", change_colour_on_click)
 
@@ -164,7 +157,7 @@ def main():
     canvas2 = tk.Canvas(frame_grid2, width=366, height=366)
     canvas2.pack()
 ###insert player 2 grid here
-    p2Game = Game(canvas2, root, p2Frame, gameSpeed, False, blue[0], blue[1])
+    p2Game = Game(canvas2, root, p2Frame, default_speed, 2, 1, blue[0], blue[1], defaultCells)
     p1Game.adversary = p2Game
     p2Game.adversary = p1Game
 ###insert player 2 grid button listener her
