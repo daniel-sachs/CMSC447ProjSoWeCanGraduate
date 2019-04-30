@@ -64,7 +64,13 @@ def main():
     root.geometry("1400x700+25+0")
     root.focus_set()
 
+
     #Adding elements to the screen starting with the above scoreboard and buttons
+
+    # labels to indicate whose turn it is
+    p1Turn = tk.Label(root, text="Player 1's Turn", bg="gray25", fg="snow", font=(None, "25"))
+
+    p2Turn = tk.Label(root, text="Player 2's Turn", bg="gray25", fg="snow", font=(None, "25"))
 
     frame_timer = tk.Frame(root, width=300, height=200, highlightthickness=3, highlightbackground="black")
     frame_timer.pack()
@@ -147,7 +153,7 @@ def main():
     frame_grid.place(x=304, y=260)
     canvas = tk.Canvas(frame_grid, width=366, height=366)
     canvas.pack()
-    p1Game = Game(canvas, root, p1Frame, default_speed, True,  green[0], green[1], defaultCells)
+    p1Game = Game(canvas, root, p1Frame, default_speed, True,  green[0], green[1], defaultCells, turnLabel=(p1Turn, 50, 100))
     #create_grid()
     #scanvas.bind("<Button-1>", change_colour_on_click)
 
@@ -157,7 +163,7 @@ def main():
     canvas2 = tk.Canvas(frame_grid2, width=366, height=366)
     canvas2.pack()
 ###insert player 2 grid here
-    p2Game = Game(canvas2, root, p2Frame, default_speed, False, blue[0], blue[1], defaultCells)
+    p2Game = Game(canvas2, root, p2Frame, default_speed, False, blue[0], blue[1], defaultCells, turnLabel=(p2Turn, 1400-280, 100))
     p1Game.adversary = p2Game
     p2Game.adversary = p1Game
 ###insert player 2 grid button listener her

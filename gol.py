@@ -134,7 +134,7 @@ This is the menu where you can find the instructions for the game. There are ins
 
 class Game:
 	
-	def __init__(self, canvas, root, pFrame, gameSpeed, my_turn, color = 'forest green', dead_color = 'green2', cells_left = 15, adversary = None):
+	def __init__(self, canvas, root, pFrame, gameSpeed, my_turn, color = 'forest green', dead_color = 'green2', cells_left = 15, adversary = None, turnLabel=None):
 		self.canvas = canvas
 		self.root = root
 		self.stats_frame = pFrame
@@ -154,9 +154,22 @@ class Game:
 		self.adversary = adversary
 		self.my_turn = my_turn
 		self.original_turn = my_turn
+		self.turnLabel = turnLabel # should be a 3-tuple containing the element to show and its x and y position
+		if self.my_turn:
+			self.turnLabel[0].place(x=self.turnLabel[1], y=self.turnLabel[2])
 
+	# shows the label declaring it is this player's turn
+	def showMyTurn(self):
+		self.turnLabel[0].place(x=self.turnLabel[1], y=self.turnLabel[2])
 
+	# returns number of cells player may change this turn
+	def getCellsLeft(self):
+		return(self.cells_left)
+	
 	def updateRemaining(self):
+		self.turnLabel[0].place_forget()
+		if self.adversary.getCellsLeft() > 0:
+			self.adversary.showMyTurn()
 		remaining = 1
 		num_white = self.board_size - self.total_alive
 		self.stats_frame[remaining].config(text = "Remaining White: %.2f" % ((num_white / self.board_size) * 100) + "%")
