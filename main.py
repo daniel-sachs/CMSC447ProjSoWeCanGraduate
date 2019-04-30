@@ -153,10 +153,10 @@ def main():
     frame_Banner = tk.Frame(root, width=300, height=200, highlightthickness=3, highlightbackground="black")
     frame_Banner.pack()
     frame_Banner.place(x=288, y=198)
-    #player1Title =
-    tk.Label(frame_Banner, text=p1_name, bg="gray25", fg="snow", font=(None, "16"), width=33).pack(side="left")
-    #player2Title =
-    tk.Label(frame_Banner, text=p2_name, bg="gray25", fg="snow", font=(None, "16"), width=33).pack(side="right")
+    p1Title = tk.Label(frame_Banner, text=p1_name, bg="gray25", fg="snow", font=(None, "16"), width=33)
+    p1Title.pack(side="left")
+    p2Title = tk.Label(frame_Banner, text=p2_name, bg="gray25", fg="snow", font=(None, "16"), width=33)
+    p2Title.pack(side="right")
 
     frame_board = tk.Frame(root, width=300, height=200)
     frame_board.pack()
@@ -178,7 +178,7 @@ def main():
     alive.pack()
     dead = tk.Label(frame_player1, text="Dead Cells: 0", bg="gray50", fg="black", font=(None, "15"), width=19, height=3, anchor="n")
     dead.pack()
-    p1Frame = [cellToChange, remaining, alive, dead]
+    p1Frame = [cellToChange, remaining, alive, dead, p1Title]
 
     #Player 2 side
     frame_player2 = tk.Frame(root, width=300, height=200, highlightthickness=2, highlightbackground="black")
@@ -194,7 +194,7 @@ def main():
     alive2.pack()
     dead2 = tk.Label(frame_player2, text="Dead Cells: 0", bg="gray50", fg="black", font=(None, "15"), width=20, height=3, anchor="n")
     dead2.pack()
-    p2Frame = [cellToChange2, remaining2, alive2, dead2]
+    p2Frame = [cellToChange2, remaining2, alive2, dead2, p2Title]
 
     #adding the boards to the GUI
     frame_grid = tk.Frame(root, width=380, height=458, highlightthickness=2, highlightbackground="black")
