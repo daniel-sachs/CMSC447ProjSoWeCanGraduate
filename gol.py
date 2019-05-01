@@ -197,6 +197,8 @@ class Game:
     def change_colour_on_click(self, event):
         print(event.x, event.y)
         print("GLOBAL_TURN = ", self.global_turn)
+        self.title.config(bg = self.color)
+
         x, y = self.find_rect_coordinates(event.x, event.y)
         try:
             iy = int(x / 10 - 1)
@@ -206,7 +208,6 @@ class Game:
 
             # Logic for if a player clicks on their board during their turn
             if self.global_turn == 1 and self.grid[ix][iy].player == 1:
-                self.title.config(bg = self.color)
                 if self.cells_left > 0:
                     if self.grid[ix][iy].isAlive:
                         self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
@@ -219,6 +220,7 @@ class Game:
                     print("Enemy's cells left =", self.adversary.cells_left)
                 elif self.cells_left == 0:
                     print("Player 1 turn over")
+                    # You are player 1
                     self.title.config(bg = "gray25")
                     self.updateRemaining()
                     if self.global_turn == 1:
@@ -228,7 +230,6 @@ class Game:
                         self.global_turn = 1
                         self.adversary.global_turn = 1
             elif self.global_turn == 2 and self.grid[ix][iy].player == 2:
-                self.adversary.title.config(bg = self.adversary.color)
                 if self.cells_left > 0:
                     if self.grid[ix][iy].isAlive:
                         self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
@@ -241,7 +242,8 @@ class Game:
                     print("Enemy's cells left =", self.adversary.cells_left)
                 elif self.cells_left == 0:
                     print("Player 2 turn over")
-                    self.adversary.title.config(bg = "gray25")
+                    # You are player 2
+                    self.title.config(bg = "gray25")
                     self.updateRemaining()
                     if self.global_turn == 1:
                         self.global_turn = 2
@@ -251,7 +253,8 @@ class Game:
                         self.adversary.global_turn = 1
             # Logic for if a player click on their adversary's board during their turn
             elif self.global_turn == 1 and self.grid[ix][iy].player == 2:
-                self.title.config(bg = self.color)
+                # Player 2's color should not change
+                self.title.config(bg = "gray25")
                 if self.adversary.cells_left >= 2:
                     if self.grid[ix][iy].isAlive:
                         self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
@@ -265,6 +268,7 @@ class Game:
                         print("Enemy's cells left =", self.cells_left)
                 elif self.adversary.cells_left == 0:
                     print("Player 1 turn over")
+                    # You are player 1
                     self.title.config(bg = "gray25")
                     self.updateRemaining()
                     if self.global_turn == 1:
@@ -274,7 +278,8 @@ class Game:
                         self.global_turn = 1
                         self.adversary.global_turn = 1
             elif self.global_turn == 2 and self.grid[ix][iy].player == 1:
-                self.adversary.title.config(bg = self.adversary.color)
+                # Player 1's color should not change
+                self.title.config(bg = "gray25")
                 if self.adversary.cells_left >= 2:
                     if self.grid[ix][iy].isAlive:
                         self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
@@ -288,6 +293,7 @@ class Game:
                         print("Enemy's cells left =", self.cells_left)
                 elif self.adversary.cells_left == 0:
                     print("Player 2 turn over")
+                    # You are currently player 2
                     self.adversary.title.config(bg = "gray25")
                     self.updateRemaining()
                     if self.global_turn == 1:

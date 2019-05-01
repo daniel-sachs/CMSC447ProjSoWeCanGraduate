@@ -14,6 +14,7 @@ def promptWindow(prompt, info_list):
 
         # Getting the player's name
         w = tk.Tk()
+        w.title("Player Information")
         # Gets the requested values of the height and widht.
         windowWidth = w.winfo_reqwidth()
         windowHeight = w.winfo_reqheight()
@@ -45,10 +46,42 @@ def getInfo(num_players):
 
     # Loops for the number of players
     for i in range(num_players):
-        name_prompt = "Player " + str(i + 1) + name_prompt
-        promptWindow(name_prompt, info)
+        temp_name_prompt = "Player " + str(i + 1) + name_prompt
+        promptWindow(temp_name_prompt, info)
         promptWindow(color_prompt, info)
     return info
+
+def displayWinner():
+    winner = p1Name
+    winner_banner = "The winner is:"
+
+    # Checking who is the winner
+    if p1Game.total_alive < p2Game.total_alive:
+        winner = p2Name
+    elif p1Game.total_alive == p2Game.total_alive:
+        winner += " and " + p2Name
+
+    # Getting the player's name
+    w = tk.Tk()
+    w.title("Winner Banner")
+    # Gets the requested values of the height and widht.
+    windowWidth = w.winfo_reqwidth()
+    windowHeight = w.winfo_reqheight()
+    print("Width",windowWidth,"Height",windowHeight)
+
+    # Gets both half the screen width/height and window width/height
+    positionRight = int(w.winfo_screenwidth()/2 - windowWidth/2)
+    positionDown = int(w.winfo_screenheight()/2 - windowHeight/2)
+
+    # Positions the window in the center of the page.
+    w.geometry("+{}+{}".format(positionRight, positionDown))
+
+     # Popup that will display to user
+    tk.Label(w, text=winner_banner).pack()
+    tk.Label(w, text=winner).pack()
+    w.after(8000, w.destroy)
+    w.mainloop()
+
 
 def begin_game(turnCounter, iters, turns, speed):
     updateDisplay(turnCounter, iters, turns, speed)
@@ -77,13 +110,19 @@ def updateDisplay(turnLabel, iters, turns, speed):
         turnLabel.after(speed, updateDisplay, turnLabel, iters - 1, turns, speed)
 
     if turns[0] == 0:
+        displayWinner()
         end_of_game(p1Game, p2Game)
+    # For testing purposes
+    #elif turns[0] == 19:
+        #displayWinner()
 
 
 def main():
 
     global p1Game
     global p2Game
+    global p1Name
+    global p2Name
     iterations = 20
     turn = [20]
     max_speed = 300
@@ -103,11 +142,32 @@ def main():
     colors = [green, blue, red, purple]
 
 
+    # Getting player name (and validating response)
     game_info = getInfo(2)
-    p1_name = game_info[0]
-    p1_color = (int(game_info[1]) - 1) % 4
-    p2_name = game_info[2]
-    p2_color = (int(game_info[3]) - 1) % 4
+    try:
+        p1_name = game_info[0]
+    except:
+        p1_name = "Player 1"
+    try:
+        p2_name = game_info[2]
+    except:
+        p2_name = "Player 2"
+    if p1_name == " " or p1_name == "":
+        p1_name = "Player 1"
+    if p2_name == " " or p2_name == "":
+        p2_name = "Player 2"
+    p1Name = p1_name
+    p2Name = p2_name
+
+    # Validating player color
+    try:
+        p1_color = (int(game_info[1]) - 1) % 4
+    except:
+        p1_color = 1
+    try:
+       p2_color = (int(game_info[3]) - 1) % 4
+    except:
+        p2_color = 2
 
     # Building the screen
     root = tk.Tk()
