@@ -156,6 +156,10 @@ def main():
         p1_name = "Player 1"
     if p2_name == " " or p2_name == "":
         p2_name = "Player 2"
+    if len(p1_name) > 10:
+        p1_name = p1_name[:9]
+    if len(p2_name) > 10:
+        p2_name = p2_name[:9]
     p1Name = p1_name
     p2Name = p2_name
 
