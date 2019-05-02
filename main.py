@@ -203,7 +203,7 @@ def main():
     #stop =
     tk.Button(frame_buttons, text="Stop!", command=stop_game, width=10).pack()
     #setTurn =
-    tk.Button(frame_buttons, text="Set Turns", width=10).pack()
+    #tk.Button(frame_buttons, text="Set Turns", width=10).pack()
 
     frame_slider = tk.Frame(root, width=200, height=80, highlightthickness=2, highlightbackground="black")
     frame_slider.pack()
