@@ -84,13 +84,15 @@ def displayWinner():
 
 
 def begin_game(turnCounter, iters, turns, speed):
-    updateDisplay(turnCounter, iters, turns, speed)
-    p1Game.begin()
-    p2Game.begin()
+    if not p1Game.is_running and not p2Game.is_running:
+        updateDisplay(turnCounter, iters, turns, speed)
+        p1Game.begin()
+        p2Game.begin()
 
 def stop_game():
-    p1Game.stop()
-    p2Game.stop()
+    if p1Game.is_running and p2Game.is_running:
+        p1Game.stop()
+        p2Game.stop()
 
 def set_speed(val):
     SetSpeed(p1Game,p2Game, val)
