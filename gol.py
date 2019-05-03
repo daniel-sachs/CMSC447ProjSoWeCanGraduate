@@ -29,6 +29,7 @@ class Cell:
         self.pos_screen = (x, y)
         self.pos_matrix = (i, j)
         self.player = player
+        self.is_painted = False
 
     def __str__(self):
         return str(self.isAlive)
@@ -156,7 +157,13 @@ class Game:
         self.cells_left = cells_left
         self.canvas.bind("<Button-1>", self.change_colour_on_click)
         self.adversary = adversary
+        self.title = pFrame[4]
+        self.banner = pFrame[5]
+        self.is_running = False
 
+        if self.player == 1:
+            self.banner.config(bg=self.color)
+            self.title.config(bg=self.color)
 
     def updateRemaining(self):
         remaining = 1
@@ -180,7 +187,7 @@ class Game:
             self.grid.append([])
             self.rectangles.append([])
             for j in range(self.board_len): #width
-                rect = self.canvas.create_rectangle(x, y, x+10, y+10, fill="white")
+                rect = self.canvas.create_rectangle(x, y, x+10, y+10, fill="white", outline="gray25")
                 self.rectangles[i].append(rect)
                 self.grid[i].append(Cell(x, y, i, j, self.player))
                 x += 10
@@ -197,105 +204,138 @@ class Game:
     def change_colour_on_click(self, event):
         print(event.x, event.y)
         print("GLOBAL_TURN = ", self.global_turn)
-        x, y = self.find_rect_coordinates(event.x, event.y)
-        try:
-            iy = int(x / 10 - 1)
-            ix = int(y / 10 - 1)
-            if ix == -1 or iy == -1:
-                raise IndexError
+        #self.title.config(bg = self.color)
+        if (self.cells_left > 0 or self.adversary.cells_left > 0) and not self.is_running:
+            x, y = self.find_rect_coordinates(event.x, event.y)
+            try:
+                iy = int(x / 10 - 1)
+                ix = int(y / 10 - 1)
+                if ix == -1 or iy == -1:
+                    raise IndexError
 
-            # Logic for if a player clicks on their board during their turn
-            if self.global_turn == 1 and self.grid[ix][iy].player == 1:
-                if self.cells_left > 0:
-                    if self.grid[ix][iy].isAlive:
-                        self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
-                        self.total_dead += 1
-                    else:
-                        self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.color)
-                        self.total_alive += 1
-                    self.cells_left = self.cells_left - 1
-                    print("On your board! cells left =", self.cells_left)
-                    print("Enemy's cells left =", self.adversary.cells_left)
-                elif self.cells_left == 0:
-                    print("Player 1 turn over")
-                    self.updateRemaining()
-                    if self.global_turn == 1:
-                        self.global_turn = 2
-                        self.adversary.global_turn = 2
-                    else:
-                        self.global_turn = 1
-                        self.adversary.global_turn = 1
-            elif self.global_turn == 2 and self.grid[ix][iy].player == 2:
-                if self.cells_left > 0:
-                    if self.grid[ix][iy].isAlive:
-                        self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
-                        self.total_dead += 1
-                    else:
-                        self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.color)
-                        self.total_alive += 1
-                    self.cells_left = self.cells_left - 1
-                    print("On your board! cells left =", self.cells_left)
-                    print("Enemy's cells left =", self.adversary.cells_left)
-                elif self.cells_left == 0:
-                    print("Player 2 turn over")
-                    self.updateRemaining()
-                    if self.global_turn == 1:
-                        self.global_turn = 2
-                        self.adversary.global_turn = 2
-                    else:
-                        self.global_turn = 1
-                        self.adversary.global_turn = 1
-            # Logic for if a player click on their adversary's board during their turn
-            elif self.global_turn == 1 and self.grid[ix][iy].player == 2:
-                if self.adversary.cells_left >= 2:
-                    if self.grid[ix][iy].isAlive:
-                        self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
-                        self.total_dead += 1
-                        self.adversary.cells_left = self.adversary.cells_left - 2
-                        print("On your enemy's board! my cells left =", self.adversary.cells_left)
-                        print("Enemy's cells left =", self.cells_left)
-                    else:
-                        print("Can only remove cells from your adversary's board!")
-                        print("My cells left =", self.adversary.cells_left)
-                        print("Enemy's cells left =", self.cells_left)
-                elif self.adversary.cells_left == 0:
-                    print("Player 1 turn over")
-                    self.updateRemaining()
-                    if self.global_turn == 1:
-                        self.global_turn = 2
-                        self.adversary.global_turn = 2
-                    else:
-                        self.global_turn = 1
-                        self.adversary.global_turn = 1
-            elif self.global_turn == 2 and self.grid[ix][iy].player == 1:
-                if self.adversary.cells_left >= 2:
-                    if self.grid[ix][iy].isAlive:
-                        self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
-                        self.total_dead += 1
-                        self.adversary.cells_left = self.adversary.cells_left - 2
-                        print("On your enemy's board! cells my left =", self.adversary.cells_left)
-                        print("Enemy's cells left =", self.cells_left)
-                    else:
-                        print("Can only remove cells from your adversary's board!")
-                        print("My cells left =", self.adversary.cells_left)
-                        print("Enemy's cells left =", self.cells_left)
-                elif self.adversary.cells_left == 0:
-                    print("Player 2 turn over")
-                    self.updateRemaining()
-                    if self.global_turn == 1:
-                        self.global_turn = 2
-                        self.adversary.global_turn = 2
-                    else:
-                        self.global_turn = 1
-                        self.adversary.global_turn = 1
+                # Logic for if a player clicks on their board during their turn
+                if self.global_turn == 1 and self.grid[ix][iy].player == 1:
+                    if self.cells_left > 0:
+                        if self.grid[ix][iy].isAlive:
+                            self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
+                            self.total_dead += 1
+                        else:
+                            self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.color)
+                            self.grid[ix][iy].is_painted = True
+                            self.total_alive += 1
+                        self.cells_left = self.cells_left - 1
+                        self.grid[ix][iy].switchStatus()
+                        print("On your board! cells left =", self.cells_left)
+                        print("Enemy's cells left =", self.adversary.cells_left)
+                    if self.cells_left == 0:
+                        print("Player 1 turn over")
+                        # You are player 1
+                        self.banner.config(bg = "gray25")
+                        self.title.config(bg = "gray25")
+                        self.updateRemaining()
+                        if self.global_turn == 1:
+                            self.adversary.banner.config(bg=self.adversary.color)
+                            self.adversary.title.config(bg=self.adversary.color)
+                            self.global_turn = 2
+                            self.adversary.global_turn = 2
+                        #else:
+                        #    self.global_turn = 1
+                        #    self.adversary.global_turn = 1
+                elif self.global_turn == 2 and self.grid[ix][iy].player == 2:
+                    if self.cells_left > 0:
+                        if self.grid[ix][iy].isAlive:
+                            self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
+                            self.total_dead += 1
+                        else:
+                            self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.color)
+                            self.grid[ix][iy].is_painted = True
+                            self.total_alive += 1
+                        self.cells_left = self.cells_left - 1
+                        self.grid[ix][iy].switchStatus()
+                        print("On your board! cells left =", self.cells_left)
+                        print("Enemy's cells left =", self.adversary.cells_left)
+                    if self.cells_left == 0:
+                        print("Player 2 turn over")
+                        # You are player 2
+                        self.banner.config(bg = "gray25")
+                        self.title.config(bg = "gray25")
+                        self.updateRemaining()
+                        if self.global_turn == 1:
+                            self.adversary.banner.config(bg=self.adversary.color)
+                            self.adversary.title.config(bg=self.adversary.color)
+                            self.global_turn = 2
+                            self.adversary.global_turn = 2
+                        #else:
+                        #    self.global_turn = 1
+                        #    self.adversary.global_turn = 1
+                # Logic for if a player click on their adversary's board during their turn
+                elif self.global_turn == 1 and self.grid[ix][iy].player == 2:
+                    # Player 2's color should not change
+                    self.banner.config(bg = "gray25")
+                    self.title.config(bg="gray25")
+                    if self.adversary.cells_left >= 2:
+                        if self.grid[ix][iy].isAlive:
+                            self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
+                            self.total_dead += 1
+                            self.adversary.cells_left = self.adversary.cells_left - 2
+                            self.grid[ix][iy].switchStatus()
+                            print("On your enemy's board! my cells left =", self.adversary.cells_left)
+                            print("Enemy's cells left =", self.cells_left)
+                        else:
+                            print("Can only remove cells from your adversary's board!")
+                            print("My cells left =", self.adversary.cells_left)
+                            print("Enemy's cells left =", self.cells_left)
+                    if self.adversary.cells_left == 0:
+                        print("Player 1 turn over")
+                        # You are player 1
+                        self.adversary.banner.config(bg = "gray25")
+                        self.adversary.title.config(bg="gray25")
+                        self.updateRemaining()
+                        if self.global_turn == 1:
+                            self.banner.config(bg=self.color)
+                            self.title.config(bg=self.color)
+                            self.global_turn = 2
+                            self.adversary.global_turn = 2
+                        #else:
+                        #    self.global_turn = 1
+                        #    self.adversary.global_turn = 1
+                elif self.global_turn == 2 and self.grid[ix][iy].player == 1:
+                    # Player 1's color should not change
+                    self.banner.config(bg = "gray25")
+                    self.title.config(bg="gray25")
+                    if self.adversary.cells_left >= 2:
+                        if self.grid[ix][iy].isAlive:
+                            self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
+                            self.total_dead += 1
+                            self.adversary.cells_left = self.adversary.cells_left - 2
+                            self.grid[ix][iy].switchStatus()
+                            print("On your enemy's board! cells my left =", self.adversary.cells_left)
+                            print("Enemy's cells left =", self.cells_left)
+                        else:
+                            print("Can only remove cells from your adversary's board!")
+                            print("My cells left =", self.adversary.cells_left)
+                            print("Enemy's cells left =", self.cells_left)
+                    if self.adversary.cells_left == 0:
+                        print("Player 2 turn over")
+                        # You are currently player 2
+                        self.adversary.banner.config(bg = "gray25")
+                        self.adversary.title.config(bg="gray25")
+                        self.updateRemaining()
+                        if self.global_turn == 1:
+                            self.title.config(bg=self.color)
+                            self.banner.config(bg=self.color)
+                            self.global_turn = 2
+                            self.adversary.global_turn = 2
+                        #else:
+                        #    self.global_turn = 1
+                        #    self.adversary.global_turn = 1
 
 
-            self.grid[ix][iy].switchStatus()
+                self.updateFrame()
+                self.adversary.updateFrame()
+            except IndexError:
+                return
             self.updateFrame()
-            self.adversary.updateFrame()
-        except IndexError:
-            return
-        self.updateFrame()
 
     def getBonus(self):
         bonus_num = 0
@@ -312,10 +352,18 @@ class Game:
                     if j.nextStatus:
                         self.canvas.itemconfig(self.rectangles[x][y], fill=self.color)
                         #print("changed", j.pos_matrix, "from dead to alive")
-                        self.total_alive += 1
+                        if not self.grid[x][y].is_painted:
+                            self.total_alive += 1
+                            self.grid[x][y].is_painted = True
+                        else:
+                            self.total_dead -= 1
+                            
+                    
+                    
                     else:
                         self.canvas.itemconfig(self.rectangles[x][y], fill=self.dead_color)
                         self.total_dead += 1
+                        
                         #print("changed", j.pos_matrix, "from alive to dead")
                     j.switchStatus()
                     #print("Current status of", j.pos_matrix, j.isAlive)
@@ -345,6 +393,7 @@ class Game:
 
 
     def begin(self):
+        self.is_running = True
         for i in self.grid:
             for j in i:
                 if self.changeInStatus(j):
@@ -359,10 +408,17 @@ class Game:
 
     def stop(self):
         print ("STOPPING")
+        self.is_running = False
         self.updateRemaining()
         self.cells_left = 15 + self.getBonus()
         self.updateFrame()
         self.global_turn = self.original_turn
+        if self.player == 1:
+            self.banner.config(bg=self.color)
+            self.title.config(bg=self.color)
+        else:
+            self.banner.config(bg="gray25")
+            self.banner.config(bg="gray25")
         self.root.after_cancel(self.begin_id)
 
 #-------------------------------------------------------------------
