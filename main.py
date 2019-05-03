@@ -5,6 +5,7 @@ from gol import Menubar, Game, SetSpeed, end_of_game
 from functools import partial
 
 
+
 # Creates the window that will be displated for the prompt and takes input
 def promptWindow(prompt, info_list):
     # Function that apppens user input
@@ -183,6 +184,7 @@ def main():
     content.grid(column=0, row=0)
     logo_container = tk.PhotoImage(file="logo_container.png")
     
+    
     ################################
     ######### HEADER STUFF #########
     ################################
@@ -195,7 +197,7 @@ def main():
     turn_space = tk.Frame(header_space, width=300, height=300, bg="white")
     turn_space.grid(column=1, row=1)
     logo_padding = tk.Frame(turn_space, width=315, height=200, bg="white")
-    logo_padding.grid(column=0, row=0)
+    logo_padding.grid(column=0, row=0, sticky="s")
     turn_bg = tk.Label(turn_space, image=logo_container, bg="white")
     turn_bg.place(x=0, y=0, relwidth=1, relheight=1)
     turn_frame = tk.Frame(turn_space, width=250, height=125, bg="IndianRed3")
