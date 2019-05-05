@@ -12,6 +12,7 @@ def SetSpeed(p1, p2, speed = 200):
     p2.game_speed = speed
 #-------------------------------------------------------------------
 def end_of_game(p1, p2):
+    print ("ENDING GAME")
     t = Timer(1.5, p1.root.quit)
     t.start()
 #-------------------------------------------------------------------

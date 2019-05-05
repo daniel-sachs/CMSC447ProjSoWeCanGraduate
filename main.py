@@ -79,14 +79,14 @@ def displayWinner():
     w.geometry("+{}+{}".format(positionRight, positionDown))
 
      # Popup that will display to user
-    tk.Label(w, text=winner_banner).pack()
-    tk.Label(w, text=winner).pack()
+    tk.Label(w, text=winner_banner, font=(None, "15")).pack()
+    tk.Label(w, text=winner, font=(None, "15")).pack()
     w.after(8000, w.destroy)
     w.mainloop()
 
 
 def begin_game(turnCounter, iters, turns, speed):
-    if not p1Game.is_running and not p2Game.is_running:
+    if not p1Game.is_running and not p2Game.is_running and turns[0] > 0:
         updateDisplay(turnCounter, iters, turns, speed)
         p1Game.begin()
         p2Game.begin()
@@ -129,8 +129,8 @@ def main():
     global p1Name
     global p2Name
     iterations = 20
-    turn = [20]
-    max_speed = 300
+    turn = [3]
+    max_speed = 200
     default_speed = max_speed * 2
     min_speed = default_speed + max_speed
     defaultCells = 15
@@ -182,8 +182,14 @@ def main():
     
     content = tk.Frame(root, bg="white")
     content.grid(column=0, row=0)
-    logo_container = tk.PhotoImage(file="logo_container.png")
     
+    bg_img = tk.PhotoImage(file="game_bg.png")
+    logo_container = tk.PhotoImage(file="logo_container.png")
+
+    game_bg = tk.Label(content, image=bg_img, bg="white")
+    game_bg.place(x=0, y=0, relwidth=1, relheight=1)
+    
+
     
     ################################
     ######### HEADER STUFF #########
