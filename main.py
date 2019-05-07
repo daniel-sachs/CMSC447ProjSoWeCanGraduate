@@ -220,8 +220,6 @@ def main():
     start_button.grid(column=0, row=0)
     stop_button = tk.Button(button_frame, text="Stop!", command=stop_game,  width=22)
     stop_button.grid(column=0, row=1)
-    turns_button = tk.Button(button_frame, text="Set Turns", width=22)
-    turns_button.grid(column=0, row=2)
     
     ## SLIDER SECTION
     slider_space = tk.Frame(header_space, width=200, height=200, bg="white")

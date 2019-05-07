@@ -57,22 +57,9 @@ class Menubar(tk.Frame):
         self.parent.config(menu=menubar)
 
         fileMenu = tk.Menu(menubar)
-        fileMenu.add_command(label="New", command=self.onNew)
-        #fileMenu.add_command(label="View Scores", command=self.onView)
         fileMenu.add_command(label="Exit", command=self.onExit)
         menubar.add_cascade(label="File", menu=fileMenu)
 
-        generalMenu = tk.Menu(menubar)
-        generalMenu.add_command(label="Start", command=self.onStub)
-        generalMenu.add_command(label="Stop", command=self.onStub)
-        generalMenu.add_command(label="Set Turns", command=self.onStub)
-        generalMenu.add_command(label="Reset", command=self.onStub)
-        menubar.add_cascade(label="Game", menu=generalMenu)
-
-        helpMenu = tk.Menu(menubar)
-        helpMenu.add_command(label="General", command=self.onGeneral)
-        helpMenu.add_command(label="Menubar", command=self.onMenu)
-        menubar.add_cascade(label="Help", menu=helpMenu)
 
     def onNew(self):
         print()
