@@ -1,3 +1,13 @@
+## @file gol.py
+#  @brief Contains class definitions for the game.
+#
+#  @author Sarah Alvarez
+#  @author Pablo Burgos
+#  @author Innocent Kironji
+#  @author Daniel Sachs
+#  @author Jason Schuler
+#  @author James Walls
+
 import tkinter as tk
 from threading import Timer
 
@@ -6,24 +16,36 @@ from threading import Timer
 # Helper Functions
 #-------------------------------------------------------------------
 
-# Speeds up the game_speed based on the value found at the slider
+## Speeds up the game_speed based on the value found at the slider
+#  @param p1 Player one's Game object
+#  @param p2 Player two's Game object
+#  @param speed The time between each game "tick" in nanoseconds.
 def SetSpeed(p1, p2, speed = 200):
     p1.game_speed = speed
     p2.game_speed = speed
-#-------------------------------------------------------------------
+
+## Ends the game.
+#  @param p1 Player one's Game object.
+#  @param p2 Player two's Game object.
 def end_of_game(p1, p2):
     print ("ENDING GAME")
     t = Timer(1.5, p1.root.quit)
     t.start()
-#-------------------------------------------------------------------
 
 
 #-------------------------------------------------------------------
 # Various Classes
 #-------------------------------------------------------------------
 
-# Creates a cell on the board
+## Creates a cell on the board
 class Cell:
+
+    ## The constructor.
+    #  @param x The x screen position of the cell.
+    #  @param y The y screen position of the cell.
+    #  @param i The row coordinate of the cell.
+    #  @param j The column coordinate of the cell.
+    #  @param player The owner of the cell.
     def __init__(self, x, y, i, j, player = 0):
         self.isAlive = False
         self.nextStatus = None
@@ -32,25 +54,59 @@ class Cell:
         self.player = player
         self.is_painted = False
 
+    ## Prints a readable message.
+    #  @param self The current object.
+    #  @return A string message describing the current state of the
+    #          cell.
     def __str__(self):
         return str(self.isAlive)
 
+    ## Prints an unambiguous message.
+    #  @param self The current object.
+    #  @return A string message describing the current state of the
+    #          cell.
     def __repr__(self):
         return str(self.isAlive)
 
+    ## Switches the current status of the cell.
+    #
+    #  A cell that is current alive will die, and a cell that is
+    #  currently dead will become alive.
+    #
+    #  @param self The current object.
     def switchStatus(self):
         self.isAlive = not self.isAlive
 
+    ## @var isAlive
+    #  The current state of the cell. Cells can be either alive or dead.
+    #
+    #  @var nextStatus
+    #
+    #  @var pos_screen
+    #  The screen position.
+    #
+    #  @var pos_matrix
+    #  The coordinates of the cell in the matrix.
+    #
+    #  @var player
+    #  The owner of the cell (player one or player two).
+
 #-------------------------------------------------------------------
 
-# Creates a menubar for the main display
+## Creates a menubar for the main display
+#  @extends tk.Frame
 class Menubar(tk.Frame):
+
+    ## The constructor.
+    #  @param parent The parent Frame.
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
         self.parent = parent
         self.root = parent
         self.initUI()
 
+    ## Initialized the user interface.
+    #  @param self The current Menubar object.
     def initUI(self):
         self.parent.title("Simple menu")
         menubar = tk.Menu(self.parent)
@@ -59,7 +115,6 @@ class Menubar(tk.Frame):
         fileMenu = tk.Menu(menubar)
         fileMenu.add_command(label="Exit", command=self.onExit)
         menubar.add_cascade(label="File", menu=fileMenu)
-
 
     def onNew(self):
         print()
@@ -78,12 +133,16 @@ class Menubar(tk.Frame):
         T.after(15000, T.destroy)
         S.after(15000, S.destroy)
 
+    ## Closes the menu bar
+    #  @param self The current Menu Bar object.
     def onExit(self):
         self.quit()
 
     def onStub(self):
         print()
 
+    ## Displays general information.
+    #  @param self The current Menu Bar object.
     def onGeneral(self):
         master = tk.Tk()
         master.title("General Help")
@@ -98,6 +157,8 @@ class Menubar(tk.Frame):
         exitButton = tk.Button(master, text = "Quit", command = master.destroy)
         exitButton.pack(side = tk.LEFT, fill = tk.Y)
 
+    ## Displays Menu information.
+    #  @param self The current Menu Bar object.
     def onMenu(self):
         master = tk.Tk()
         master.title("Menubar Help")
@@ -122,8 +183,20 @@ Exit this help menu by pressing 'quit' to the right of this text"
 
 #---------------------------------------------------------------------
 
+## The main class of the game.
 class Game:
 
+    ## The constructor.
+    #  @param canvas The tkinter canvas.
+    #  @param root The root.
+    #  @param pFrame The statistics frame.
+    #  @param gameSpeed The time between game ticks.
+    #  @param player The current player.
+    #  @param global_turn The Game turn.
+    #  @param color The color of cells that are alive.
+    #  @param dead_color The color of painted dead cells.
+    #  @param cells_left The remaining cells the player can edit.
+    #  @param adversary The other player.
     def __init__(self, canvas, root, pFrame, gameSpeed, player, global_turn, color = 'forest green', dead_color = 'green2', cells_left = 15, adversary = None):
         self.canvas = canvas
         self.root = root
@@ -153,12 +226,15 @@ class Game:
             self.banner.config(bg=self.color)
             self.title.config(bg=self.color)
 
+    ## Updates the number of remaining cells.
+    #  @param The current Game object.
     def updateRemaining(self):
         remaining = 1
         num_white = self.board_size - self.total_alive
         self.stats_frame[remaining].config(text = "Remaining White: %.2f" % ((num_white / self.board_size) * 100) + "%")
 
-  # Function for updating the values for the player stats
+    ## Function for updating the values for the player stats
+    #  @param self The current Game object.
     def updateFrame(self):
         cellToChange = 0
         alive = 2
@@ -167,7 +243,8 @@ class Game:
         self.stats_frame[alive].config(text = "Score: " + str(self.total_alive))
         self.stats_frame[dead].config(text = "Dead Cells: " + str(self.total_dead))
 
-    # This function creates the board on which the game will take place
+    ## This function creates the board on which the game will take place.
+    #  @param self The current Game object.
     def create_grid(self):
         x = 10
         y = 10
@@ -183,12 +260,18 @@ class Game:
             y += 10
 
 
-    # Find the co-ordinates of the rectangle which has been clicked
+    ## Finds the co-ordinates of the rectangle which has been clicked
+    #  @param self The current object.
+    #  @param x The x coordinate of the clicked cell.
+    #  @param y The y coordinate of the clicked cell.
     def find_rect_coordinates(self, x, y):
         return (x- x%10, y - y%10)
 
 
-    # Change the colour of the clicked self.grid and change the status of cell in the self.grid
+    ## Change the colour of the clicked self.grid and change the status of cell in the self.grid
+    #  @param self The current Game object.
+    #  @param event DESCRIPTION
+    #  @reutrn The updated Frame.
     def change_colour_on_click(self, event):
         print(event.x, event.y)
         print("GLOBAL_TURN = ", self.global_turn)
@@ -325,12 +408,17 @@ class Game:
                 return
             self.updateFrame()
 
+    ## Assigns bonus points to edit cells to the player in the lead.
+    #  @param self The current Game object.
+    #  @return The number of bonus points awarded to the current player.
     def getBonus(self):
         bonus_num = 0
         if self.total_alive > self.adversary.total_alive:
             bonus_num = 5
         return bonus_num
 
+    ## Colors the cells in the grid.
+    #  @param self The current Game object.
     def paint_grid(self):
         for i in self.grid:
             for j in i:
@@ -358,7 +446,10 @@ class Game:
                 self.updateFrame()
         #print("Done painting")
 
-
+    ## Determines if the cell's status changes in the next gen.
+    #  @param self The current Game object.
+    #  @param cell The current cell.
+    #  @return Whether the cell changes in the next gen or not.
     def changeInStatus(self, cell):
         ''' If the cell's status changes in the next gen, return True else False '''
         num_alive = 0
@@ -379,7 +470,8 @@ class Game:
         else:
             return num_alive == 3
 
-
+    ## Begins the game.
+    #  @param self The current Game object.
     def begin(self):
         self.is_running = True
         for i in self.grid:
@@ -393,7 +485,8 @@ class Game:
         self.paint_grid()
         self.begin_id = self.root.after(self.game_speed, self.begin) # Can be used to change speed
 
-
+    ## Stops the game.
+    #  @param The current Game object.
     def stop(self):
         print ("STOPPING")
         self.is_running = False

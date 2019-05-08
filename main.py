@@ -1,3 +1,13 @@
+## @file main.py
+#  @brief The game driver.
+#
+#  @author Sarah Alvarez
+#  @author Pablo Burgos
+#  @author Innocent Kironji
+#  @author Daniel Sachs
+#  @author Jason Schuler
+#  @author James Walls
+
 import tkinter as tk
 from threading import Timer
 from time import sleep
@@ -6,9 +16,13 @@ from functools import partial
 
 
 
-# Creates the window that will be displated for the prompt and takes input
+## Creates the window that will be displated for the prompt and takes input
+#  @param prompt The prompt that will be displayed to the user.
+#  @param info_list The list to which the information will be appended.
 def promptWindow(prompt, info_list):
-    # Function that apppens user input
+
+        ## Function that apppend user input
+        #  @param event
         def evaluate(event):
             info_list.append(entry.get())
             res.configure(text = "You entered: " + str(entry.get()))
@@ -39,7 +53,9 @@ def promptWindow(prompt, info_list):
         exitButton.pack()
         w.mainloop()
 
-# Getting color and name info for players
+## Getting color and name info for players
+#  @param num_Players The number of players.
+#  @return A list of info on the player' colors and names.
 def getInfo(num_players):
     info = []
     color_prompt = "Please pick a color from one of the following (type the number): \n 1.Green 2.Blue 3.Red 4.Purple \n (Press \'Enter\' when you are finished)"
@@ -52,7 +68,7 @@ def getInfo(num_players):
         promptWindow(color_prompt, info)
     return info
 
-
+## Displays the winner of the game.
 def displayWinner():
     winner = p1Name
     winner_banner = "The winner is:"
@@ -84,22 +100,33 @@ def displayWinner():
     w.after(8000, w.destroy)
     w.mainloop()
 
-
+## Begins the game.
+#  @param turnCounter The turn counter for the game.
+#  @param iters 
+#  @param turns The total number of turns for the game.
+#  @param speed The initial game speed.
 def begin_game(turnCounter, iters, turns, speed):
     if not p1Game.is_running and not p2Game.is_running and turns[0] > 0:
         updateDisplay(turnCounter, iters, turns, speed)
         p1Game.begin()
         p2Game.begin()
 
+## Stops the game.
 def stop_game():
     if p1Game.is_running and p2Game.is_running:
         p1Game.stop()
         p2Game.stop()
 
+## Sets the game speed.
+#  @param val The time between game ticks in nanoseconds.
 def set_speed(val):
     SetSpeed(p1Game,p2Game, val)
 
-# Manages the changes made to the game's main display
+## Begins the game.
+#  @param turnCounter The turn counter for the game.
+#  @param iters 
+#  @param turns The total number of turns for the game.
+#  @param speed The initial game speed.
 def updateDisplay(turnLabel, iters, turns, speed):
 
     # have to hit start to end the game. need to figure this out
@@ -121,7 +148,7 @@ def updateDisplay(turnLabel, iters, turns, speed):
         #displayWinner()
 
 
-
+## The main driver function.
 def main():
     
     global p1Game
