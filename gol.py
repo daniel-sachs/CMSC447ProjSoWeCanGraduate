@@ -1,76 +1,118 @@
+## @file gol.py
+#  @brief Contains class definitions for the game.
+#
+#  @author Sarah Alvarez
+#  @author Pablo Burgos
+#  @author Innocent Kironji
+#  @author Daniel Sachs
+#  @author Jason Schuler
+#  @author James Walls
+
 import tkinter as tk
 from threading import Timer
-
 
 #-------------------------------------------------------------------
 # Helper Functions
 #-------------------------------------------------------------------
 
-# Speeds up the game_speed based on the value found at the slider
+## Speeds up the game_speed based on the value found at the slider
+#  @param p1 Player one's Game object
+#  @param p2 Player two's Game object
+#  @param speed The time between each game "tick" in nanoseconds.
 def SetSpeed(p1, p2, speed = 200):
     p1.game_speed = speed
     p2.game_speed = speed
-#-------------------------------------------------------------------
+
+## Ends the game.
+#  @param p1 Player one's Game object.
+#  @param p2 Player two's Game object.
 def end_of_game(p1, p2):
+    print ("ENDING GAME")
     t = Timer(1.5, p1.root.quit)
     t.start()
-#-------------------------------------------------------------------
-
 
 #-------------------------------------------------------------------
 # Various Classes
 #-------------------------------------------------------------------
 
-# Creates a cell on the board
+## Creates a cell on the board
 class Cell:
+
+    ## The constructor.
+    #  @param x The x screen position of the cell.
+    #  @param y The y screen position of the cell.
+    #  @param i The row coordinate of the cell.
+    #  @param j The column coordinate of the cell.
+    #  @param player The owner of the cell.
     def __init__(self, x, y, i, j, player = 0):
         self.isAlive = False
         self.nextStatus = None
         self.pos_screen = (x, y)
         self.pos_matrix = (i, j)
         self.player = player
+        self.is_painted = False
 
+    ## Prints a readable message.
+    #  @param self The current object.
+    #  @return A string message describing the current state of the
+    #          cell.
     def __str__(self):
         return str(self.isAlive)
 
+    ## Prints an unambiguous message.
+    #  @param self The current object.
+    #  @return A string message describing the current state of the
+    #          cell.
     def __repr__(self):
         return str(self.isAlive)
 
+    ## Switches the current status of the cell.
+    #
+    #  A cell that is current alive will die, and a cell that is
+    #  currently dead will become alive.
+    #
+    #  @param self The current object.
     def switchStatus(self):
         self.isAlive = not self.isAlive
 
+    ## @var isAlive
+    #  The current state of the cell. Cells can be either alive or dead.
+    #
+    #  @var nextStatus
+    #
+    #  @var pos_screen
+    #  The screen position.
+    #
+    #  @var pos_matrix
+    #  The coordinates of the cell in the matrix.
+    #
+    #  @var player
+    #  The owner of the cell (player one or player two).
+
 #-------------------------------------------------------------------
 
-# Creates a menubar for the main display
+## Creates a menubar for the main display
+#  @extends tk.Frame
 class Menubar(tk.Frame):
+
+    ## The constructor.
+    #  @param parent The parent Frame.
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
         self.parent = parent
         self.root = parent
         self.initUI()
 
+    ## Initialized the user interface.
+    #  @param self The current Menubar object.
     def initUI(self):
         self.parent.title("Simple menu")
         menubar = tk.Menu(self.parent)
         self.parent.config(menu=menubar)
 
         fileMenu = tk.Menu(menubar)
-        fileMenu.add_command(label="New", command=self.onNew)
-        #fileMenu.add_command(label="View Scores", command=self.onView)
         fileMenu.add_command(label="Exit", command=self.onExit)
         menubar.add_cascade(label="File", menu=fileMenu)
-
-        generalMenu = tk.Menu(menubar)
-        generalMenu.add_command(label="Start", command=self.onStub)
-        generalMenu.add_command(label="Stop", command=self.onStub)
-        generalMenu.add_command(label="Set Turns", command=self.onStub)
-        generalMenu.add_command(label="Reset", command=self.onStub)
-        menubar.add_cascade(label="Game", menu=generalMenu)
-
-        helpMenu = tk.Menu(menubar)
-        helpMenu.add_command(label="General", command=self.onGeneral)
-        helpMenu.add_command(label="Menubar", command=self.onMenu)
-        menubar.add_cascade(label="Help", menu=helpMenu)
 
     def onNew(self):
         print()
@@ -89,12 +131,16 @@ class Menubar(tk.Frame):
         T.after(15000, T.destroy)
         S.after(15000, S.destroy)
 
+    ## Closes the menu bar
+    #  @param self The current Menu Bar object.
     def onExit(self):
         self.quit()
 
     def onStub(self):
         print()
 
+    ## Displays general information.
+    #  @param self The current Menu Bar object.
     def onGeneral(self):
         master = tk.Tk()
         master.title("General Help")
@@ -109,6 +155,8 @@ class Menubar(tk.Frame):
         exitButton = tk.Button(master, text = "Quit", command = master.destroy)
         exitButton.pack(side = tk.LEFT, fill = tk.Y)
 
+    ## Displays Menu information.
+    #  @param self The current Menu Bar object.
     def onMenu(self):
         master = tk.Tk()
         master.title("Menubar Help")
@@ -133,8 +181,20 @@ Exit this help menu by pressing 'quit' to the right of this text"
 
 #---------------------------------------------------------------------
 
+## The main class of the game.
 class Game:
 
+    ## The constructor.
+    #  @param canvas The tkinter canvas.
+    #  @param root The root.
+    #  @param pFrame The statistics frame.
+    #  @param gameSpeed The time between game ticks.
+    #  @param player The current player.
+    #  @param global_turn The Game turn.
+    #  @param color The color of cells that are alive.
+    #  @param dead_color The color of painted dead cells.
+    #  @param cells_left The remaining cells the player can edit.
+    #  @param adversary The other player.
     def __init__(self, canvas, root, pFrame, gameSpeed, player, global_turn, color = 'forest green', dead_color = 'green2', cells_left = 15, adversary = None):
         self.canvas = canvas
         self.root = root
@@ -157,13 +217,22 @@ class Game:
         self.canvas.bind("<Button-1>", self.change_colour_on_click)
         self.adversary = adversary
         self.title = pFrame[4]
+        self.banner = pFrame[5]
+        self.is_running = False
 
+        if self.player == 1:
+            self.banner.config(bg=self.color)
+            self.title.config(bg=self.color)
+
+    ## Updates the number of remaining cells.
+    #  @param The current Game object.
     def updateRemaining(self):
         remaining = 1
         num_white = self.board_size - self.total_alive
         self.stats_frame[remaining].config(text = "Remaining White: %.2f" % ((num_white / self.board_size) * 100) + "%")
 
-  # Function for updating the values for the player stats
+    ## Function for updating the values for the player stats
+    #  @param self The current Game object.
     def updateFrame(self):
         cellToChange = 0
         alive = 2
@@ -172,7 +241,8 @@ class Game:
         self.stats_frame[alive].config(text = "Score: " + str(self.total_alive))
         self.stats_frame[dead].config(text = "Dead Cells: " + str(self.total_dead))
 
-    # This function creates the board on which the game will take place
+    ## This function creates the board on which the game will take place.
+    #  @param self The current Game object.
     def create_grid(self):
         x = 10
         y = 10
@@ -180,143 +250,170 @@ class Game:
             self.grid.append([])
             self.rectangles.append([])
             for j in range(self.board_len): #width
-                rect = self.canvas.create_rectangle(x, y, x+10, y+10, fill="white")
+                rect = self.canvas.create_rectangle(x, y, x+10, y+10, fill="white", outline="gray25")
                 self.rectangles[i].append(rect)
                 self.grid[i].append(Cell(x, y, i, j, self.player))
                 x += 10
             x = 10
             y += 10
 
-
-    # Find the co-ordinates of the rectangle which has been clicked
+    ## Finds the co-ordinates of the rectangle which has been clicked
+    #  @param self The current object.
+    #  @param x The x coordinate of the clicked cell.
+    #  @param y The y coordinate of the clicked cell.
     def find_rect_coordinates(self, x, y):
         return (x- x%10, y - y%10)
 
-
-    # Change the colour of the clicked self.grid and change the status of cell in the self.grid
+    ## Change the colour of the clicked self.grid and change the status of cell in the self.grid
+    #  @param self The current Game object.
+    #  @param event DESCRIPTION
+    #  @reutrn The updated Frame.
     def change_colour_on_click(self, event):
         print(event.x, event.y)
         print("GLOBAL_TURN = ", self.global_turn)
-        self.title.config(bg = self.color)
+        #self.title.config(bg = self.color)
+        if (self.cells_left > 0 or self.adversary.cells_left > 0) and not self.is_running:
+            x, y = self.find_rect_coordinates(event.x, event.y)
+            try:
+                iy = int(x / 10 - 1)
+                ix = int(y / 10 - 1)
+                if ix == -1 or iy == -1:
+                    raise IndexError
 
-        x, y = self.find_rect_coordinates(event.x, event.y)
-        try:
-            iy = int(x / 10 - 1)
-            ix = int(y / 10 - 1)
-            if ix == -1 or iy == -1:
-                raise IndexError
+                # Logic for if a player clicks on their board during their turn
+                if self.global_turn == 1 and self.grid[ix][iy].player == 1:
+                    if self.cells_left > 0:
+                        if self.grid[ix][iy].isAlive:
+                            self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
+                            self.total_dead += 1
+                        else:
+                            self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.color)
+                            self.grid[ix][iy].is_painted = True
+                            self.total_alive += 1
+                        self.cells_left = self.cells_left - 1
+                        self.grid[ix][iy].switchStatus()
+                        print("On your board! cells left =", self.cells_left)
+                        print("Enemy's cells left =", self.adversary.cells_left)
+                    if self.cells_left == 0:
+                        print("Player 1 turn over")
+                        # You are player 1
+                        self.banner.config(bg = "gray25")
+                        self.title.config(bg = "gray25")
+                        self.updateRemaining()
+                        if self.global_turn == 1:
+                            self.adversary.banner.config(bg=self.adversary.color)
+                            self.adversary.title.config(bg=self.adversary.color)
+                            self.global_turn = 2
+                            self.adversary.global_turn = 2
+                        #else:
+                        #    self.global_turn = 1
+                        #    self.adversary.global_turn = 1
+                elif self.global_turn == 2 and self.grid[ix][iy].player == 2:
+                    if self.cells_left > 0:
+                        if self.grid[ix][iy].isAlive:
+                            self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
+                            self.total_dead += 1
+                        else:
+                            self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.color)
+                            self.grid[ix][iy].is_painted = True
+                            self.total_alive += 1
+                        self.cells_left = self.cells_left - 1
+                        self.grid[ix][iy].switchStatus()
+                        print("On your board! cells left =", self.cells_left)
+                        print("Enemy's cells left =", self.adversary.cells_left)
+                    if self.cells_left == 0:
+                        print("Player 2 turn over")
+                        # You are player 2
+                        self.banner.config(bg = "gray25")
+                        self.title.config(bg = "gray25")
+                        self.updateRemaining()
+                        if self.global_turn == 1:
+                            self.adversary.banner.config(bg=self.adversary.color)
+                            self.adversary.title.config(bg=self.adversary.color)
+                            self.global_turn = 2
+                            self.adversary.global_turn = 2
+                        #else:
+                        #    self.global_turn = 1
+                        #    self.adversary.global_turn = 1
+                # Logic for if a player click on their adversary's board during their turn
+                elif self.global_turn == 1 and self.grid[ix][iy].player == 2:
+                    # Player 2's color should not change
+                    self.banner.config(bg = "gray25")
+                    self.title.config(bg="gray25")
+                    if self.adversary.cells_left >= 2:
+                        if self.grid[ix][iy].isAlive:
+                            self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
+                            self.total_dead += 1
+                            self.adversary.cells_left = self.adversary.cells_left - 2
+                            self.grid[ix][iy].switchStatus()
+                            print("On your enemy's board! my cells left =", self.adversary.cells_left)
+                            print("Enemy's cells left =", self.cells_left)
+                        else:
+                            print("Can only remove cells from your adversary's board!")
+                            print("My cells left =", self.adversary.cells_left)
+                            print("Enemy's cells left =", self.cells_left)
+                    if self.adversary.cells_left == 0:
+                        print("Player 1 turn over")
+                        # You are player 1
+                        self.adversary.banner.config(bg = "gray25")
+                        self.adversary.title.config(bg="gray25")
+                        self.updateRemaining()
+                        if self.global_turn == 1:
+                            self.banner.config(bg=self.color)
+                            self.title.config(bg=self.color)
+                            self.global_turn = 2
+                            self.adversary.global_turn = 2
+                        #else:
+                        #    self.global_turn = 1
+                        #    self.adversary.global_turn = 1
+                elif self.global_turn == 2 and self.grid[ix][iy].player == 1:
+                    # Player 1's color should not change
+                    self.banner.config(bg = "gray25")
+                    self.title.config(bg="gray25")
+                    if self.adversary.cells_left >= 2:
+                        if self.grid[ix][iy].isAlive:
+                            self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
+                            self.total_dead += 1
+                            self.adversary.cells_left = self.adversary.cells_left - 2
+                            self.grid[ix][iy].switchStatus()
+                            print("On your enemy's board! cells my left =", self.adversary.cells_left)
+                            print("Enemy's cells left =", self.cells_left)
+                        else:
+                            print("Can only remove cells from your adversary's board!")
+                            print("My cells left =", self.adversary.cells_left)
+                            print("Enemy's cells left =", self.cells_left)
+                    if self.adversary.cells_left == 0:
+                        print("Player 2 turn over")
+                        # You are currently player 2
+                        self.adversary.banner.config(bg = "gray25")
+                        self.adversary.title.config(bg="gray25")
+                        self.updateRemaining()
+                        if self.global_turn == 1:
+                            self.title.config(bg=self.color)
+                            self.banner.config(bg=self.color)
+                            self.global_turn = 2
+                            self.adversary.global_turn = 2
+                        #else:
+                        #    self.global_turn = 1
+                        #    self.adversary.global_turn = 1
 
-            # Logic for if a player clicks on their board during their turn
-            if self.global_turn == 1 and self.grid[ix][iy].player == 1:
-                if self.cells_left > 0:
-                    if self.grid[ix][iy].isAlive:
-                        self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
-                        self.total_dead += 1
-                    else:
-                        self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.color)
-                        self.total_alive += 1
-                    self.cells_left = self.cells_left - 1
-                    print("On your board! cells left =", self.cells_left)
-                    print("Enemy's cells left =", self.adversary.cells_left)
-                elif self.cells_left == 0:
-                    print("Player 1 turn over")
-                    # You are player 1
-                    self.title.config(bg = "gray25")
-                    self.updateRemaining()
-                    if self.global_turn == 1:
-                        self.global_turn = 2
-                        self.adversary.global_turn = 2
-                    else:
-                        self.global_turn = 1
-                        self.adversary.global_turn = 1
-            elif self.global_turn == 2 and self.grid[ix][iy].player == 2:
-                if self.cells_left > 0:
-                    if self.grid[ix][iy].isAlive:
-                        self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
-                        self.total_dead += 1
-                    else:
-                        self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.color)
-                        self.total_alive += 1
-                    self.cells_left = self.cells_left - 1
-                    print("On your board! cells left =", self.cells_left)
-                    print("Enemy's cells left =", self.adversary.cells_left)
-                elif self.cells_left == 0:
-                    print("Player 2 turn over")
-                    # You are player 2
-                    self.title.config(bg = "gray25")
-                    self.updateRemaining()
-                    if self.global_turn == 1:
-                        self.global_turn = 2
-                        self.adversary.global_turn = 2
-                    else:
-                        self.global_turn = 1
-                        self.adversary.global_turn = 1
-            # Logic for if a player click on their adversary's board during their turn
-            elif self.global_turn == 1 and self.grid[ix][iy].player == 2:
-                # Player 2's color should not change
-                self.title.config(bg = "gray25")
-                if self.adversary.cells_left >= 2:
-                    if self.grid[ix][iy].isAlive:
-                        self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
-                        self.total_dead += 1
-                        self.adversary.cells_left = self.adversary.cells_left - 2
-                        print("On your enemy's board! my cells left =", self.adversary.cells_left)
-                        print("Enemy's cells left =", self.cells_left)
-                    else:
-                        print("Can only remove cells from your adversary's board!")
-                        print("My cells left =", self.adversary.cells_left)
-                        print("Enemy's cells left =", self.cells_left)
-                elif self.adversary.cells_left == 0:
-                    print("Player 1 turn over")
-                    # You are player 1
-                    self.title.config(bg = "gray25")
-                    self.updateRemaining()
-                    if self.global_turn == 1:
-                        self.global_turn = 2
-                        self.adversary.global_turn = 2
-                    else:
-                        self.global_turn = 1
-                        self.adversary.global_turn = 1
-            elif self.global_turn == 2 and self.grid[ix][iy].player == 1:
-                # Player 1's color should not change
-                self.title.config(bg = "gray25")
-                if self.adversary.cells_left >= 2:
-                    if self.grid[ix][iy].isAlive:
-                        self.canvas.itemconfig(self.rectangles[ix][iy], fill=self.dead_color)
-                        self.total_dead += 1
-                        self.adversary.cells_left = self.adversary.cells_left - 2
-                        print("On your enemy's board! cells my left =", self.adversary.cells_left)
-                        print("Enemy's cells left =", self.cells_left)
-                    else:
-                        print("Can only remove cells from your adversary's board!")
-                        print("My cells left =", self.adversary.cells_left)
-                        print("Enemy's cells left =", self.cells_left)
-                elif self.adversary.cells_left == 0:
-                    print("Player 2 turn over")
-                    # You are currently player 2
-                    self.adversary.title.config(bg = "gray25")
-                    self.updateRemaining()
-                    if self.global_turn == 1:
-                        self.global_turn = 2
-                        self.adversary.global_turn = 2
-                    else:
-                        self.global_turn = 1
-                        self.adversary.global_turn = 1
-
-
-            self.grid[ix][iy].switchStatus()
+                self.updateFrame()
+                self.adversary.updateFrame()
+            except IndexError:
+                return
             self.updateFrame()
-            self.adversary.updateFrame()
-        except IndexError:
-            return
-        self.updateFrame()
 
+    ## Assigns bonus points to edit cells to the player in the lead.
+    #  @param self The current Game object.
+    #  @return The number of bonus points awarded to the current player.
     def getBonus(self):
         bonus_num = 0
         if self.total_alive > self.adversary.total_alive:
             bonus_num = 5
         return bonus_num
 
+    ## Colors the cells in the grid.
+    #  @param self The current Game object.
     def paint_grid(self):
         for i in self.grid:
             for j in i:
@@ -326,17 +423,26 @@ class Game:
                     if j.nextStatus:
                         self.canvas.itemconfig(self.rectangles[x][y], fill=self.color)
                         #print("changed", j.pos_matrix, "from dead to alive")
-                        self.total_alive += 1
+                        if not self.grid[x][y].is_painted:
+                            self.total_alive += 1
+                            self.grid[x][y].is_painted = True
+                        else:
+                            self.total_dead -= 1
+                    
                     else:
                         self.canvas.itemconfig(self.rectangles[x][y], fill=self.dead_color)
                         self.total_dead += 1
+                        
                         #print("changed", j.pos_matrix, "from alive to dead")
                     j.switchStatus()
                     #print("Current status of", j.pos_matrix, j.isAlive)
                 self.updateFrame()
         #print("Done painting")
 
-
+    ## Determines if the cell's status changes in the next gen.
+    #  @param self The current Game object.
+    #  @param cell The current cell.
+    #  @return Whether the cell changes in the next gen or not.
     def changeInStatus(self, cell):
         ''' If the cell's status changes in the next gen, return True else False '''
         num_alive = 0
@@ -357,8 +463,10 @@ class Game:
         else:
             return num_alive == 3
 
-
+    ## Begins the game.
+    #  @param self The current Game object.
     def begin(self):
+        self.is_running = True
         for i in self.grid:
             for j in i:
                 if self.changeInStatus(j):
@@ -370,13 +478,20 @@ class Game:
         self.paint_grid()
         self.begin_id = self.root.after(self.game_speed, self.begin) # Can be used to change speed
 
-
+    ## Stops the game.
+    #  @param The current Game object.
     def stop(self):
         print ("STOPPING")
+        self.is_running = False
         self.updateRemaining()
         self.cells_left = 15 + self.getBonus()
         self.updateFrame()
         self.global_turn = self.original_turn
+        if self.player == 1:
+            self.banner.config(bg=self.color)
+            self.title.config(bg=self.color)
+        else:
+            self.banner.config(bg="gray25")
+            self.banner.config(bg="gray25")
         self.root.after_cancel(self.begin_id)
-
 #-------------------------------------------------------------------
