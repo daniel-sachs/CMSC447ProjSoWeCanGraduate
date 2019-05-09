@@ -9,12 +9,9 @@
 #  @author James Walls
 
 import tkinter as tk
-from threading import Timer
 from time import sleep
 from gol import Menubar, Game, SetSpeed, end_of_game
 from functools import partial
-
-
 
 ## Creates the window that will be displated for the prompt and takes input
 #  @param prompt The prompt that will be displayed to the user.
@@ -150,7 +147,6 @@ def updateDisplay(turnLabel, iters, turns, speed):
 
 ## The main driver function.
 def main():
-    
     global p1Game
     global p2Game
     global p1Name
@@ -202,10 +198,7 @@ def main():
        p2_color = (int(game_info[3]) - 1) % 4
     except:
         p2_color = 2
-    
-
-
-    
+       
     root = tk.Tk()
     root.resizable(width=False, height=False)
     game_menu = Menubar(root)
@@ -219,8 +212,6 @@ def main():
 
     game_bg = tk.Label(content, image=bg_img, bg="white")
     game_bg.place(x=0, y=0, relwidth=1, relheight=1)
-    
-
     
     ################################
     ######### HEADER STUFF #########
@@ -260,15 +251,12 @@ def main():
     speed_slider=tk.Scale(slider_space, from_=max_speed, to=min_speed, orient="horizontal", length=200, command = set_speed, bg="white")
     speed_slider.set(default_speed)
     speed_slider.grid(column=0, row=1, padx=10, pady=10)
-    #speed_slider.set(default_speed)
-
 
     ################################
     ######### FOOTER STUFF #########
     ################################
     footer_space = tk.Frame(content, bg="white")
     footer_space.grid(column=0, row=2, columnspan=2, pady=10)
-
 
     ######################################
     ######### PLAYER 1 INTERFACE #########
@@ -306,7 +294,6 @@ def main():
     p1_info = [cellToChange, remaining, alive, dead, p1Title, p1_banner]
     p1Game = Game(p1_canvas, p1_frame, p1_info, default_speed, 1, 1, colors[p1_color][0], colors[p1_color][1], defaultCells)
 
-
     ######################################
     ######### PLAYER 2 INTERFACE #########
     ######################################
@@ -343,10 +330,7 @@ def main():
     p2_info = [cellToChange2, remaining2, alive2, dead2, p2Title, p2_banner]
     p2Game = Game(p2_canvas, p2_frame, p2_info, default_speed, 2, 1, colors[p2_color][0], colors[p2_color][1], defaultCells)
 
-
     p1Game.adversary = p2Game
     p2Game.adversary = p1Game
-    
     root.mainloop()
-
 main()
