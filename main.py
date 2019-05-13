@@ -9,9 +9,12 @@
 #  @author James Walls
 
 import tkinter as tk
+from threading import Timer
 from time import sleep
 from gol import Menubar, Game, SetSpeed, end_of_game
 from functools import partial
+
+
 
 ## Creates the window that will be displated for the prompt and takes input
 #  @param prompt The prompt that will be displayed to the user.
@@ -103,7 +106,7 @@ def displayWinner():
 #  @param turns The total number of turns for the game.
 #  @param speed The initial game speed.
 def begin_game(turnCounter, iters, turns, speed):
-    if not p1Game.is_running and not p2Game.is_running and turns[0] > 0:
+    if not p1Game.is_running and not p2Game.is_running and turns[0] > 0 and p1Game.cells_left == 0 and p2Game.cells_left ==0:
         updateDisplay(turnCounter, iters, turns, speed)
         p1Game.begin()
         p2Game.begin()
@@ -113,6 +116,16 @@ def stop_game():
     if p1Game.is_running and p2Game.is_running:
         p1Game.stop()
         p2Game.stop()
+		
+## Stops the turn.
+def stop_turn(turnCounter, turns):
+    if p1Game.is_running and p2Game.is_running:
+        turns[0] = turns[0] - 1
+        turnCounter.config(text=str(turns[0]))
+        stop_game()
+        if turns[0] == 0:
+            displayWinner()
+            end_of_game(p1Game, p2Game)
 
 ## Sets the game speed.
 #  @param val The time between game ticks in nanoseconds.
@@ -128,6 +141,9 @@ def updateDisplay(turnLabel, iters, turns, speed):
 
     # have to hit start to end the game. need to figure this out
     # run the function again after certain speed.
+    if not p1Game.is_running and not p2Game.is_running:
+        print ("STOP BUTTON PRESSED. ABORT UPDATE DISPLAY")
+        return
     if iters == 0:
         turns[0] = turns[0] - 1
         # update display label
@@ -147,13 +163,14 @@ def updateDisplay(turnLabel, iters, turns, speed):
 
 ## The main driver function.
 def main():
+    
     global p1Game
     global p2Game
     global p1Name
     global p2Name
     iterations = 20
     turn = [3]
-    max_speed = 200
+    max_speed = 300
     default_speed = max_speed * 2
     min_speed = default_speed + max_speed
     defaultCells = 15
@@ -198,7 +215,10 @@ def main():
        p2_color = (int(game_info[3]) - 1) % 4
     except:
         p2_color = 2
-       
+    
+
+
+    
     root = tk.Tk()
     root.resizable(width=False, height=False)
     game_menu = Menubar(root)
@@ -207,11 +227,13 @@ def main():
     content = tk.Frame(root, bg="white")
     content.grid(column=0, row=0)
     
-    bg_img = tk.PhotoImage(file="game_bg.png")
-    logo_container = tk.PhotoImage(file="logo_container.png")
+    bg_img = tk.PhotoImage(file="./game_bg.gif")
+    logo_container = tk.PhotoImage(file="./logo_container.gif")
 
     game_bg = tk.Label(content, image=bg_img, bg="white")
     game_bg.place(x=0, y=0, relwidth=1, relheight=1)
+    
+
     
     ################################
     ######### HEADER STUFF #########
@@ -240,7 +262,7 @@ def main():
     button_frame.grid(column=0, row=1, sticky="s", padx=10, pady=10)
     start_button = tk.Button(button_frame, text="Start!", command=partial(begin_game, turnCounter, iterations, turn, default_speed), width=22)
     start_button.grid(column=0, row=0)
-    stop_button = tk.Button(button_frame, text="Stop!", command=stop_game,  width=22)
+    stop_button = tk.Button(button_frame, text="Stop!", command=partial(stop_turn, turnCounter, turn), width=22)
     stop_button.grid(column=0, row=1)
     
     ## SLIDER SECTION
@@ -251,12 +273,15 @@ def main():
     speed_slider=tk.Scale(slider_space, from_=max_speed, to=min_speed, orient="horizontal", length=200, command = set_speed, bg="white")
     speed_slider.set(default_speed)
     speed_slider.grid(column=0, row=1, padx=10, pady=10)
+    #speed_slider.set(default_speed)
+
 
     ################################
     ######### FOOTER STUFF #########
     ################################
     footer_space = tk.Frame(content, bg="white")
     footer_space.grid(column=0, row=2, columnspan=2, pady=10)
+
 
     ######################################
     ######### PLAYER 1 INTERFACE #########
@@ -294,6 +319,7 @@ def main():
     p1_info = [cellToChange, remaining, alive, dead, p1Title, p1_banner]
     p1Game = Game(p1_canvas, p1_frame, p1_info, default_speed, 1, 1, colors[p1_color][0], colors[p1_color][1], defaultCells)
 
+
     ######################################
     ######### PLAYER 2 INTERFACE #########
     ######################################
@@ -330,7 +356,10 @@ def main():
     p2_info = [cellToChange2, remaining2, alive2, dead2, p2Title, p2_banner]
     p2Game = Game(p2_canvas, p2_frame, p2_info, default_speed, 2, 1, colors[p2_color][0], colors[p2_color][1], defaultCells)
 
+
     p1Game.adversary = p2Game
     p2Game.adversary = p1Game
+    
     root.mainloop()
+
 main()

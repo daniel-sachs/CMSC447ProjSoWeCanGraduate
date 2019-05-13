@@ -11,6 +11,7 @@
 import tkinter as tk
 from threading import Timer
 
+
 #-------------------------------------------------------------------
 # Helper Functions
 #-------------------------------------------------------------------
@@ -30,6 +31,7 @@ def end_of_game(p1, p2):
     print ("ENDING GAME")
     t = Timer(1.5, p1.root.quit)
     t.start()
+
 
 #-------------------------------------------------------------------
 # Various Classes
@@ -257,12 +259,14 @@ class Game:
             x = 10
             y += 10
 
+
     ## Finds the co-ordinates of the rectangle which has been clicked
     #  @param self The current object.
     #  @param x The x coordinate of the clicked cell.
     #  @param y The y coordinate of the clicked cell.
     def find_rect_coordinates(self, x, y):
         return (x- x%10, y - y%10)
+
 
     ## Change the colour of the clicked self.grid and change the status of cell in the self.grid
     #  @param self The current Game object.
@@ -397,6 +401,7 @@ class Game:
                         #    self.global_turn = 1
                         #    self.adversary.global_turn = 1
 
+
                 self.updateFrame()
                 self.adversary.updateFrame()
             except IndexError:
@@ -428,6 +433,8 @@ class Game:
                             self.grid[x][y].is_painted = True
                         else:
                             self.total_dead -= 1
+                            
+                    
                     
                     else:
                         self.canvas.itemconfig(self.rectangles[x][y], fill=self.dead_color)
@@ -494,4 +501,5 @@ class Game:
             self.banner.config(bg="gray25")
             self.banner.config(bg="gray25")
         self.root.after_cancel(self.begin_id)
+
 #-------------------------------------------------------------------
