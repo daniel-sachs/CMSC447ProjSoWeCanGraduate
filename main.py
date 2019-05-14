@@ -107,9 +107,9 @@ def displayWinner():
 #  @param speed The initial game speed.
 def begin_game(turnCounter, iters, turns, speed):
     if not p1Game.is_running and not p2Game.is_running and turns[0] > 0 and p1Game.cells_left == 0 and p2Game.cells_left ==0:
-        updateDisplay(turnCounter, iters, turns, speed)
         p1Game.begin()
         p2Game.begin()
+        updateDisplay(turnCounter, iters, turns, speed)
 
 ## Stops the game.
 def stop_game():
